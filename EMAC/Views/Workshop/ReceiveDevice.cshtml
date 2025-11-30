@@ -1,0 +1,56 @@
+﻿@model EMAC.Models.WorkshopTicket
+
+@{
+    ViewData["Title"] = "استلام جهاز جديد";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+        <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">استلام جهاز للورشة</h2>
+
+        @if (Model.ServiceRequestId != null)
+        {
+            <div class="alert" style="background-color: #e2e3e5; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                <strong>مرتبط بطلب صيانة خارجي:</strong> تم جلب البيانات تلقائياً.
+            </div>
+        }
+
+        <form asp-action="ReceiveDevice" method="post">
+            <input type="hidden" asp-for="ServiceRequestId" />
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="font-weight: bold; margin-bottom: 5px; display: block;">موديل الجهاز / النوع</label>
+                <input asp-for="DeviceModel" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required placeholder="مثال: مكيف سبليت LG 2 طن" />
+                <span asp-validation-for="DeviceModel" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="font-weight: bold; margin-bottom: 5px; display: block;">الرقم التسلسلي (S/N)</label>
+                <input asp-for="SerialNumber" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required placeholder="Serial Number" />
+                <span asp-validation-for="SerialNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label style="font-weight: bold; margin-bottom: 5px; display: block;">الحالة الظاهرية (خدوش، كسور...)</label>
+                <textarea asp-for="PhysicalCondition" class="form-control" rows="2" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" placeholder="وصف حالة الجهاز عند الاستلام"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="font-weight: bold; margin-bottom: 5px; display: block;">الملحقات المستلمة</label>
+                <input asp-for="Accessories" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" placeholder="مثال: ريموت، كيبل، قاعدة..." />
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn primary-btn" style="flex: 1;">حفظ وطباعة الملصق <i class="fas fa-print"></i></button>
+                <a href="@Url.Action("Index", "Workshop")" class="btn secondary-btn" style="flex: 1; text-align: center;">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

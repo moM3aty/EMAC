@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "بوابة الفنيين";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دخول الفنيين - EMAC</title>
+    <link rel="stylesheet" href="~/css/emac_style.css">
+    <link href="~/images/logo.jpeg" rel="icon" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+            .btn-login:hover {
+                background-color: #003366;
+            }
+
+        .hint-text {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        /* تنسيق زر العودة ليكون مختلفاً (Outline Style) */
+        .btn-back {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color); /* إطار فقط */
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+            .btn-back:hover {
+                background-color: var(--primary-color);
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2 style="color: var(--primary-color); margin-bottom: 15px;">بوابة الفنيين</h2>
+
+        <div class="hint-text">
+            يتم تسجيل حسابات الفنيين من قبل الإدارة.<br>
+            يرجى إدخال اسمك المسجل للدخول.
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <p style="color: red; font-size: 0.9em;">@ViewBag.Error</p>
+        }
+
+        <form method="post" asp-action="Login">
+            <div class="form-group">
+                <input type="text" name="techName" class="form-control" placeholder="ادخل اسمك (مثال: أحمد علي)" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;" required>
+            </div>
+            <button type="submit" class="btn-login">تسجيل الدخول</button>
+        </form>
+
+        <!-- زر العودة للرئيسية بتصميم جديد -->
+        <a href="@Url.Action("Index", "Home")" class="btn-back">العودة للصفحة الرئيسية</a>
+    </div>
+</body>
+</html>

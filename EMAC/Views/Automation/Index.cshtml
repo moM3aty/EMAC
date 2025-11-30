@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "نظام الإدارة والأتمتة";
+}
+
+<!-- HERO Section for Automation Page -->
+<section id="automation-detail" class="page-section blue-bg hero-sub-page">
+    <div class="container">
+        <h1 style="color: var(--secondary-color);">منظومة الإدارة الرقمية والتشغيل</h1>
+        <p style="color: white; font-size: 1.2em;">نظام متكامل يربط المتجر، حجز المواعيد، وجدولة الفنيين في منظومة عمل ذكية باستخدام n8n على الكلاود.</p>
+        <a href="@Url.Action("Index", "Services")#booking-form" class="btn primary-btn large-btn" style="margin-top: 30px;"> جرّب نظام الحجز المؤتمت الآن!</a>
+    </div>
+</section>
+
+<!-- Automation Workflow -->
+<section id="workflow" class="page-section light-bg">
+    <div class="container">
+        <h2>كيف يعمل نظام n8n للمهام (The n8n Workflow)؟</h2>
+
+        <div class="workflow-steps-grid">
+            <div class="workflow-step animate-on-scroll">
+                <span class="step-number">1</span>
+                <h3>طلب الحجز (Trigger)</h3>
+                <p>العميل يحجز موعدًا من الموقع أو التطبيق، مما يُشغّل سير عمل (Workflow) جديد في n8n.</p>
+            </div>
+            <div class="workflow-step animate-on-scroll">
+                <span class="step-number">2</span>
+                <h3>التوزيع الذكي (Allocation)</h3>
+                <p>نظام n8n يحدد أقرب وأنسب فني للصيانة (حسب التخصص والموقع والجدول الزمني). </p>
+            </div>
+            <div class="workflow-step animate-on-scroll">
+                <span class="step-number">3</span>
+                <h3>تطبيق الفني (Technician App)</h3>
+                <p>إضافة الموعد تلقائيًا إلى جدول الفني في تطبيقه، مع جميع تفاصيل المهمة.</p>
+            </div>
+            <div class="workflow-step animate-on-scroll">
+                <span class="step-number">4</span>
+                <h3>إشعارات العميل (Notifications)</h3>
+                <p>إرسال تأكيد الحجز وإشعارات تذكيرية وتحديثات حالة الطلب عبر WhatsApp/SMS.</p>
+            </div>
+            <div class="workflow-step animate-on-scroll">
+                <span class="step-number">5</span>
+                <h3>إغلاق وتقييم (Feedback)</h3>
+                <p>بعد إتمام المهمة، يُرسل النظام استبيان رضا للعميل آليًا لضمان الجودة.</p>
+            </div>
+        </div>
+
+        <p class="text-center" style="margin-top: 60px; font-weight: 700;">**الاتمتة هي الأداة الرئيسية لضمان السرعة (Speed) والأمانة (Integrity) في تقديم الخدمة.**</p>
+    </div>
+</section>
+
+<!-- Mobile Apps Showcase -->
+<section id="mobile-apps" class="page-section">
+    <div class="container">
+        <h2>تطبيقات الموبايل (العملاء والفنيين)</h2>
+
+        <div class="app-showcase-grid">
+
+            <div class="app-card animate-on-scroll">
+                <i class="fas fa-user-alt icon"></i>
+                <h3>تطبيق العميل (الحجز والتتبع)</h3>
+                <p>تطبيق يتيح للعميل: سهولة حجز موعد الصيانة، تتبع حالة الطلب، مشاهدة موقع الفني على الخريطة، تقديم تقييم الخدمة. (متاح للتحميل من متاجر التطبيقات)</p>
+                <a href="#" class="btn primary-btn" style="margin-top: 20px;">تنزيل تطبيق العميل (Google Play)</a>
+            </div>
+
+            <div class="app-card animate-on-scroll">
+                <i class="fas fa-tools icon"></i>
+                <h3>تطبيق الفنيين (جدول المواعيد) - داخلي</h3>
+                <p>تطبيق مخصص لـ **العمليات الداخلية** يعرض للفنيين: جدول المواعيد اليومي، تفاصيل الخدمة، موقع العميل، وإمكانية تحديث حالة المهمة. **(مخصص للفرق الداخلية)**</p>
+                <a href="@Url.Action("Login", "Technician")" class="btn secondary-btn" style="margin-top: 20px;">الدخول إلى لوحة إدارة الفنيين</a>
+            </div>
+        </div>
+        <p class="text-center" style="margin-top: 40px; font-weight: 700; color: var(--dark-text);">**ملاحظة: نظام إدارة الفنيين (Dashboard) مخصص لفرق العمل الداخلية ويتم ربطه بحجز العميل أوتوماتيكياً.**</p>
+    </div>
+</section>

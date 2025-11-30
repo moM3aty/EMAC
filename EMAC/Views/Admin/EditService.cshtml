@@ -1,0 +1,54 @@
+﻿@model EMAC.Models.ServiceCategory
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "إضافة خدمة جديدة" : "تعديل خدمة";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+        <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">
+            @(Model.Id == 0 ? "إضافة خدمة جديدة" : "تعديل بيانات الخدمة")
+        </h2>
+
+        <form asp-action="SaveService" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">اسم الخدمة (بالعربية)</label>
+                <input asp-for="ArabicName" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;" required placeholder="مثال: صيانة مصاعد" />
+                <span asp-validation-for="ArabicName" style="color: red; font-size: 0.8em;"></span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">الكود البرمجي (Code)</label>
+                <input asp-for="Code" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;" required placeholder="مثال: elevator_fix" />
+                <p style="font-size: 0.8em; color: #888; margin-top: 5px;">يستخدم هذا الكود داخلياً لربط الفنيين والطلبات. يفضل استخدام حروف إنجليزية فقط.</p>
+                <span asp-validation-for="Code" style="color: red; font-size: 0.8em;"></span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">الوصف (اختياري)</label>
+                <textarea asp-for="Description" class="form-control" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input asp-for="IsActive" type="checkbox" style="width: 20px; height: 20px;" />
+                    <span style="font-weight: bold;">تفعيل الخدمة (إظهارها في صفحة الحجز)</span>
+                </label>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn primary-btn" style="flex: 1;">حفظ البيانات</button>
+                <a href="@Url.Action("Services", "Admin")" class="btn secondary-btn" style="flex: 1; text-align: center;">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

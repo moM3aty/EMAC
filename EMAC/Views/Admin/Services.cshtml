@@ -1,0 +1,61 @@
+﻿@model IEnumerable<EMAC.Models.ServiceCategory>
+
+@{
+    ViewData["Title"] = "إدارة الخدمات";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="~/images/emac_logo.png" alt="EMAC Logo" style="height: 60px;">
+            <h1 style="margin: 0;">إدارة الخدمات المتاحة</h1>
+        </div>
+        <div>
+            <a href="@Url.Action("EditService", "Admin")" class="btn primary-btn"><i class="fas fa-plus"></i> إضافة خدمة جديدة</a>
+            <a href="@Url.Action("Dashboard", "Admin")" class="btn secondary-btn">عودة للوحة التحكم</a>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <table class="table" style="width: 100%; text-align: right; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--primary-color); color: white;">
+                    <th style="padding: 15px;">الاسم بالعربية</th>
+                    <!-- تم استبدال عمود الكود البرمجي بالوصف -->
+                    <th style="padding: 15px;">الوصف / ملاحظات</th>
+                    <th style="padding: 15px;">الحالة</th>
+                    <th style="padding: 15px;">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px; font-weight: bold;">@item.ArabicName</td>
+                        <td style="padding: 15px; color: #666;">@(item.Description ?? "-")</td>
+                        <td style="padding: 15px;">
+                            @if (item.IsActive)
+                            {
+                                <span style="color: green;"><i class="fas fa-check-circle"></i> نشط</span>
+                            }
+                            else
+                            {
+                                <span style="color: red;"><i class="fas fa-times-circle"></i> متوقف</span>
+                            }
+                        </td>
+                        <td style="padding: 15px;">
+                            <a href="@Url.Action("EditService", "Admin", new { id = item.Id })" class="btn secondary-btn" style="padding: 5px 15px; font-size: 0.9em;">
+                                <i class="fas fa-edit"></i> تعديل
+                            </a>
+                            <form asp-action="DeleteService" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟ سيختفي هذا الخيار من صفحة الحجز.');">
+                                <button type="submit" class="btn primary-btn" style="padding: 5px 15px; font-size: 0.9em; background-color: #dc3545; border: none;">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

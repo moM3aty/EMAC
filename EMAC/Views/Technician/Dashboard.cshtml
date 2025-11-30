@@ -1,0 +1,157 @@
+﻿@model IEnumerable<EMAC.Models.ServiceRequest>
+@{
+    ViewData["Title"] = "جدول المهام اليومي";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="margin: 0;">مرحباً، @ViewBag.TechName</h1>
+            <p style="color: #666;">إليك جدول مهامك القادمة</p>
+        </div>
+        <a href="@Url.Action("Logout", "Technician")" class="btn secondary-btn" style="padding: 8px 20px;">خروج</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 50px; background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <i class="fas fa-check-circle" style="font-size: 3em; color: green; margin-bottom: 20px;"></i>
+            <h3>عمل رائع! لا توجد مهام معلقة.</h3>
+            <p>جميع المهام الموكلة إليك تم إنجازها أو تحويلها.</p>
+        </div>
+    }
+    else
+    {
+        <div class="schedule-grid" style="display: grid; gap: 20px;">
+            @foreach (var task in Model)
+            {
+                <div class="task-card" style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-right: 5px solid @(task.AppointmentDate.Date == DateTime.Today ? "var(--secondary-color)" : "var(--primary-color)"); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+
+                    <!-- تفاصيل المهمة -->
+                    <div style="flex: 1; min-width: 250px;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1.2em;">
+                            @task.ServiceType
+                            <span style="font-size: 0.7em; background: #eee; padding: 2px 6px; border-radius: 4px;">@task.RequestNumber</span>
+                        </h3>
+                        <div style="color: #555; font-size: 0.95em;">
+                            <p style="margin: 5px 0;"><i class="fas fa-user"></i> العميل: <strong>@task.CustomerName</strong></p>
+                            <p style="margin: 5px 0;"><i class="fas fa-phone"></i> ت: <a href="tel:@task.PhoneNumber" style="color: inherit;">@task.PhoneNumber</a></p>
+                            <p style="margin: 5px 0;"><i class="fas fa-map-marker-alt"></i> الموقع: @task.Location</p>
+                            <p style="margin: 5px 0; color: #E60026;"><i class="far fa-clock"></i> الموعد: @task.AppointmentDate.ToShortDateString() | @task.TimeSlot</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(task.ProblemDescription))
+                        {
+                            <p style="background: #f9f9f9; padding: 10px; border-radius: 6px; font-size: 0.9em; margin-top: 10px;">
+                                <strong>ملاحظات:</strong> @task.ProblemDescription
+                            </p>
+                        }
+                    </div>
+
+                    <!-- أزرار الإجراءات -->
+                    <div style="text-align: center; min-width: 150px;">
+                        <a href="https://wa.me/@task.PhoneNumber" target="_blank" class="btn secondary-btn" style="display: block; margin-bottom: 10px; font-size: 0.9em; width: 100%; box-sizing: border-box;">
+                            <i class="fab fa-whatsapp"></i> مراسلة
+                        </a>
+
+                        <!-- زر فتح نافذة الإنجاز -->
+                        <button onclick="openActionModal(@task.Id, '@task.CustomerName')" class="btn primary-btn" style="background-color: green; border: none; width: 100%; font-size: 0.9em;">
+                            <i class="fas fa-check-double"></i> إنهاء المهمة
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal النافذة المنبثقة للإجراءات -->
+<div id="actionModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="background: white; width: 90%; max-width: 500px; margin: 50px auto; padding: 25px; border-radius: 10px; position: relative;">
+        <button onclick="closeModal()" style="position: absolute; left: 15px; top: 15px; background: none; border: none; font-size: 1.5em; cursor: pointer;">&times;</button>
+
+        <h3 style="color: var(--primary-color); margin-top: 0;">تسجيل نتيجة الزيارة</h3>
+        <p>العميل: <span id="modalCustomerName" style="font-weight: bold;"></span></p>
+
+        <!-- تبويبات الاختيار -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button onclick="showForm('fix')" id="btnFix" style="flex: 1; padding: 10px; border: 1px solid green; background: green; color: white; border-radius: 5px; cursor: pointer;">تم الإصلاح (فاتورة)</button>
+            <button onclick="showForm('workshop')" id="btnWorkshop" style="flex: 1; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 5px; cursor: pointer;">نقل للورشة</button>
+        </div>
+
+        <!-- فورم الإصلاح في الموقع -->
+        <form id="fixForm" asp-action="FinishOnSite" method="post">
+            <input type="hidden" name="requestId" id="fixRequestId" />
+
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label>أجور اليد (ريال)</label>
+                <input type="number" name="laborCost" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" required placeholder="مثال: 150" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label>تكلفة قطع الغيار (إن وجدت)</label>
+                <input type="number" name="partsCost" class="form-control" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" value="0" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>ملاحظات الفني / القطع المستبدلة</label>
+                <textarea name="notes" class="form-control" rows="2" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="تم استبدال كذا..."></textarea>
+            </div>
+
+            <button type="submit" class="btn primary-btn" style="width: 100%;">إصدار الفاتورة وإنهاء</button>
+        </form>
+
+        <!-- فورم النقل للورشة -->
+        <form id="workshopForm" asp-action="TransferToWorkshop" method="post" style="display: none;">
+            <input type="hidden" name="requestId" id="workshopRequestId" />
+
+            <div class="alert" style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <i class="fas fa-info-circle"></i> سيتم تحويل حالة الطلب إلى "في الورشة". يرجى تسليم الجهاز لمسؤول الورشة لاستكمال الإجراءات.
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>ملاحظات الاستلام المبدئي</label>
+                <textarea name="notes" class="form-control" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="وصف حالة الجهاز عند الاستلام..."></textarea>
+            </div>
+
+            <button type="submit" class="btn secondary-btn" style="width: 100%;">تأكيد النقل للورشة</button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    function openActionModal(id, name) {
+        document.getElementById('actionModal').style.display = 'block';
+        document.getElementById('modalCustomerName').textContent = name;
+        document.getElementById('fixRequestId').value = id;
+        document.getElementById('workshopRequestId').value = id;
+        showForm('fix'); // Default
+    }
+
+    function closeModal() {
+        document.getElementById('actionModal').style.display = 'none';
+    }
+
+    function showForm(type) {
+        const fixForm = document.getElementById('fixForm');
+        const workshopForm = document.getElementById('workshopForm');
+        const btnFix = document.getElementById('btnFix');
+        const btnWorkshop = document.getElementById('btnWorkshop');
+
+        if (type === 'fix') {
+            fixForm.style.display = 'block';
+            workshopForm.style.display = 'none';
+            btnFix.style.background = 'green';
+            btnFix.style.color = 'white';
+            btnWorkshop.style.background = '#f9f9f9';
+            btnWorkshop.style.color = 'black';
+        } else {
+            fixForm.style.display = 'none';
+            workshopForm.style.display = 'block';
+            btnWorkshop.style.background = 'var(--primary-color)';
+            btnWorkshop.style.color = 'white';
+            btnFix.style.background = '#f9f9f9';
+            btnFix.style.color = 'black';
+        }
+    }
+</script>

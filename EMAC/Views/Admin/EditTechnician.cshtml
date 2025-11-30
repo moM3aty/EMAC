@@ -1,0 +1,62 @@
+﻿@model EMAC.Models.Technician
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "إضافة فني جديد" : "تعديل بيانات الفني";
+    var specialties = ViewBag.Specialties as List<EMAC.Models.ServiceCategory>;
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+        <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">
+            @(Model.Id == 0 ? "إضافة فني جديد" : "تعديل بيانات الفني")
+        </h2>
+
+        <form asp-action="SaveTechnician" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">الاسم الكامل</label>
+                <input asp-for="FullName" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;" required placeholder="مثال: خالد محمد" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">التخصص</label>
+                <select asp-for="Specialty" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;" required>
+                    <option value="">اختر التخصص...</option>
+                    @if (specialties != null)
+                    {
+                        foreach (var spec in specialties)
+                        {
+                            <option value="@spec.Code">@spec.ArabicName (@spec.Code)</option>
+                        }
+                    }
+                    <option value="General">عام (General)</option>
+                </select>
+                <p style="font-size: 0.8em; color: #888; margin-top: 5px;">يجب أن يطابق كود الخدمة لتظهر المهام في جدوله.</p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">مناطق التغطية</label>
+                <input asp-for="CoveredRegions" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;" required placeholder="مثال: hassa, dammam" />
+                <p style="font-size: 0.8em; color: #888; margin-top: 5px;">افصل بين الأكواد بفاصلة (hassa, dammam, riyadh, all).</p>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                <div style="flex: 1;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px;">بداية الدوام</label>
+                    <input asp-for="WorkingHoursStart" type="time" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" />
+                </div>
+                <div style="flex: 1;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 8px;">نهاية الدوام</label>
+                    <input asp-for="WorkingHoursEnd" type="time" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" />
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn primary-btn" style="flex: 1;">حفظ البيانات</button>
+                <a href="@Url.Action("Technicians", "Admin")" class="btn secondary-btn" style="flex: 1; text-align: center;">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,176 @@
+﻿@model EMAC.ViewModels.ServicePageViewModel
+
+@{
+    ViewData["Title"] = "خدماتنا - الحجز والصيانة";
+}
+
+<!-- HERO Section for Services Page -->
+<section id="services-detail" class="page-section blue-bg hero-sub-page">
+    <div class="container">
+        <h1 style="color: var(--secondary-color);">خدمات الصيانة والتركيب الاحترافية</h1>
+        <p style="color: white; font-size: 1.2em;">خبرة EMAC في مشاريع التكييف المركزي، التبريد، وصيانة جميع أنواع الأجهزة المنزلية.</p>
+        <a href="#booking-form" class="btn primary-btn large-btn" style="margin-top: 30px;">ابدأ حجز موعد الصيانة الآن!</a>
+    </div>
+</section>
+
+<!-- تفاصيل الخدمات -->
+<section id="main-services-list" class="page-section light-bg">
+    <div class="container">
+        <h2 class="animate-on-scroll">نطاق خدمات الصيانة والمشاريع</h2>
+        <p class="section-description animate-on-scroll">نقدم خدماتنا بخبرة واحترافية عالية، شاملة للقطاع التجاري والصناعي والمنزلي.</p>
+
+        <div class="services-list-grid">
+            <!-- خدمات تركيب التكييف المركزي -->
+            <div class="service-detail-card animate-on-scroll">
+                <i class="fas fa-industry icon"></i>
+                <h3>خدمات تركيبات التكييف المركزي</h3>
+                <ul>
+                    <li>تركيب وصيانة وحدات التكييف المركزي</li>
+                    <li>صناعة مجاري الهواء "الدكت"</li>
+                    <li>صيانة العوازل وحلول التبريد</li>
+                    <li><strong style="color: var(--primary-color);">تمديد مواسير النحاس للتكييف</strong></li>
+                </ul>
+            </div>
+
+            <!-- خدمات صيانة التبريد والمستودعات -->
+            <div class="service-detail-card animate-on-scroll">
+                <i class="fas fa-warehouse icon"></i>
+                <h3>غرف التبريد والتجميد والصيانة الدورية</h3>
+                <ul>
+                    <li>تركيب غرف التبريد والتجميد</li>
+                    <li>خدمات صيانة نظم التبريد للغرف المبردة</li>
+                    <li>صيانة دورية لأنظمة التكييف المركزي</li>
+                    <li>خدمات نظام لوحة المراقبة عن بعد</li>
+                </ul>
+            </div>
+
+            <!-- خدمات صيانة الأجهزة المنزلية -->
+            <div class="service-detail-card animate-on-scroll">
+                <i class="fas fa-home icon"></i>
+                <h3>صيانة الأجهزة المنزلية والكهربائية</h3>
+                <ul>
+                    <li>صيانة أجهزة التكييف والتبريد (منزلية)</li>
+                    <li>صيانة الثلاجات والغسالات والخلاطات</li>
+                    <li>صيانة الأفران والميكروويف والسخانات</li>
+                    <li>لف موتورات وصيانة لوحات إلكترونية</li>
+                </ul>
+            </div>
+
+            <!-- خدمات تخصصية أخرى -->
+            <div class="service-detail-card animate-on-scroll">
+                <i class="fas fa-hands-helping icon"></i>
+                <h3>خدمات احترافية إضافية</h3>
+                <ul>
+                    <li>صيانة تكييف السيارات المبردة (الشاحنات)</li>
+                    <li>إعداد دراسات الجدوى الفنية للمشاريع</li>
+                    <li>خدمات الاستشارات الفنية والتقنية</li>
+                    <li>تصميم وتنفيذ المشروعات الكهربائية</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- نموذج الحجز المتكامل -->
+<section id="booking-form" class="page-section light-bg">
+    <div class="container">
+        <div class="booking-progress-bar">
+            <div class="step active" data-step="1">1. الخدمة</div>
+            <div class="step" data-step="2">2. الوقت</div>
+            <div class="step" data-step="3">3. التفاصيل</div>
+            <div class="step" data-step="4">4. تم</div>
+            <div class="progress-line" style="width: 0%;"></div>
+        </div>
+
+        <div class="booking-steps-wrapper">
+            <!-- Step 1: Service & Location -->
+            <div id="step-1" class="booking-step active">
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">الخطوة 1: اختيار الخدمة والموقع</h2>
+                <p class="section-description" style="margin-bottom: 30px;">يرجى اختيار نوع الخدمة وموقعها.</p>
+                <div class="contact-form style-center">
+                    <div class="form-group select-wrapper">
+                        <label for="b-service">الخدمة المطلوبة:</label>
+                        <select id="b-service" name="service" asp-items="Model.ServicesList" required>
+                            <option value="" disabled selected>--- اختر نوع الخدمة بالتحديد ---</option>
+                        </select>
+                    </div>
+                    <div class="form-group select-wrapper">
+                        <label for="b-location">الموقع:</label>
+                        <select id="b-location" name="location" asp-items="Model.LocationsList" required>
+                            <option value="" disabled selected>--- اختر موقعاً ---</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn primary-btn large-btn next-step-btn" data-next-step="2">التالي <i class="fas fa-angle-left"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Date & Time -->
+            <div id="step-2" class="booking-step" style="display: none;">
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">الخطوة 2: اختيار الوقت المناسب</h2>
+                <div class="contact-form style-center calendar-view">
+                    <div class="calendar-and-slots-wrapper">
+                        <div class="calendar-box">
+                            <h4>اختر التاريخ</h4>
+                            <input type="date" id="appointment-date" class="form-control" style="width: 100%; padding: 10px;" />
+                        </div>
+                        <div class="time-slots-box">
+                            <h4>المواعيد المتاحة</h4>
+                            <div id="slots-container" class="calendar-grid" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                                <p>يرجى اختيار التاريخ أولاً</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-navigation-buttons">
+                        <button type="button" class="btn primary-btn large-btn next-step-btn" data-next-step="3" disabled>التالي <i class="fas fa-angle-left"></i></button>
+                        <button type="button" class="btn secondary-btn large-btn prev-step-btn" data-prev-step="1">السابق</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Details -->
+            <div id="step-3" class="booking-step" style="display: none;">
+                <h2 style="margin-top: 40px; margin-bottom: 20px;">الخطوة 3: إدخال التفاصيل</h2>
+                <div class="contact-form style-center">
+                    <form id="final-booking-form">
+                        <div class="form-group"><label for="b-name">الاسم الثلاثي:</label><input type="text" id="b-name" name="name" required placeholder="الاسم الكامل"></div>
+                        <div class="form-group"><label for="b-phone">رقم الهاتف:</label><input type="tel" id="b-phone" name="phone" required placeholder="مثال: 05xxxxxxxx"></div>
+                        <div class="form-group"><label for="b-details">وصف المشكلة:</label><textarea id="b-details" name="details" rows="4" placeholder="يرجى وصف المشكلة بالتفصيل"></textarea></div>
+                        <div class="step-navigation-buttons">
+                            <button type="submit" class="btn primary-btn large-btn next-step-btn">تأكيد الحجز <i class="fas fa-angle-left"></i></button>
+                            <button type="button" class="btn secondary-btn large-btn prev-step-btn" data-prev-step="2">السابق</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div id="step-4" class="booking-step" style="display: none;">
+                <h2 style="margin-top: 40px; color: var(--secondary-color);">تم تأكيد الحجز بنجاح! <i class="fas fa-check-circle"></i></h2>
+                <p class="section-description">تم تسجيل طلبك برقم: <span id="success-req-num" style="font-weight:bold; color:black;"></span></p>
+                <p class="section-description">كود الجهاز: <span id="success-dev-code" style="font-weight:bold; color:black;"></span></p>
+                <p class="section-description">شكراً لك. تم إرسال طلبك بنجاح. ستتلقى رسالة تأكيد تتضمن تفاصيل الموعد واسم الفني قريباً.</p>
+                <a href="@Url.Action("Index", "Home")" class="btn primary-btn large-btn">العودة للصفحة الرئيسية</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Coverage (Repeated here as per HTML flow but can be removed if redundant) -->
+<section id="coverage" class="page-section light-bg">
+    <div class="container">
+        <h2 class="animate-on-scroll">نطاق التغطية الجغرافية</h2>
+        <div class="coverage-details animate-on-scroll">
+            <h3 style="color: var(--secondary-color); font-size: 1.8em; margin-top: 0;">خدمة فورية في:</h3>
+            <ul>
+                <li><i class="fas fa-map-marker-alt"></i> **الأحساء (جواثا) ** (المقر الرئيسي)</li>
+                <li><i class="fas fa-map-marker-alt"></i> **الدمام / الخبر**</li>
+                <li><i class="fas fa-map-marker-alt"></i> **الرياض**</li>
+            </ul>
+            <p class="note">لتغطية المدن الأخرى (كجدة، تبوك، إلخ)، يرجى التواصل معنا للاستفسار عن المشاريع الكبيرة والخدمات المبرمجة مسبقاً.</p>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/booking.js"></script>
+}

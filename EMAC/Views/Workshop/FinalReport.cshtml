@@ -1,0 +1,162 @@
+﻿@model EMAC.Models.WorkshopTicket
+@{
+    Layout = null;
+    var initialReport = ViewBag.InitialReport as EMAC.Models.InitialReport;
+    var invoice = ViewBag.Invoice as EMAC.Models.Invoice;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>التقرير الفني النهائي - @Model.DeviceCode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #eee;
+            padding: 20px;
+        }
+
+        .report-box {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #004A99;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            background: #f0f8ff;
+            padding: 10px;
+            color: #004A99;
+            font-weight: bold;
+            margin-top: 20px;
+            border-right: 5px solid #004A99;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        td, th {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .status-stamp {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            border: 3px solid green;
+            color: green;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            opacity: 0.8;
+        }
+        @@media print {
+            body
+
+        {
+            background: white;
+        }
+
+        .report-box {
+            box-shadow: none;
+        }
+
+        .no-print {
+            display: none;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="text-align: center; margin-bottom: 20px;">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #004A99; color: white; border: none; cursor: pointer;">طباعة التقرير</button>
+    </div>
+
+    <div class="report-box" style="position: relative;">
+        @if (Model.Status == "Completed" || Model.Status == "Closed")
+        {
+            <div class="status-stamp">تم الإصلاح / COMPLETED</div>
+        }
+
+        <div class="header">
+            <img src="/images/emac_logo.png" alt="EMAC" style="height: 60px;">
+            <h1>التقرير الفني النهائي | Final Technical Report</h1>
+            <p>تاريخ التقرير: @DateTime.Now.ToShortDateString()</p>
+        </div>
+
+        <div class="section-title">بيانات الجهاز والعميل</div>
+        <table>
+            <tr>
+                <td style="width: 20%; background: #f9f9f9;">العميل</td>
+                <td>@(Model.ServiceRequest?.CustomerName ?? "-")</td>
+                <td style="width: 20%; background: #f9f9f9;">رقم الهاتف</td>
+                <td>@(Model.ServiceRequest?.PhoneNumber ?? "-")</td>
+            </tr>
+            <tr>
+                <td style="background: #f9f9f9;">الجهاز / الموديل</td>
+                <td>@Model.DeviceModel</td>
+                <td style="background: #f9f9f9;">كود الجهاز</td>
+                <td><strong>@Model.DeviceCode</strong></td>
+            </tr>
+            <tr>
+                <td style="background: #f9f9f9;">الرقم التسلسلي</td>
+                <td colspan="3">@Model.SerialNumber</td>
+            </tr>
+        </table>
+
+        <div class="section-title">تفاصيل الفحص والإصلاح</div>
+        <table>
+            <tr>
+                <td style="background: #f9f9f9;">وصف العطل (التشخيص)</td>
+                <td>@(initialReport?.FaultDescription ?? "غير متوفر")</td>
+            </tr>
+            <tr>
+                <td style="background: #f9f9f9;">الإجراءات المتبعة</td>
+                <td>تم فحص الجهاز وإصلاح الأعطال المذكورة واستبدال القطع التالفة واختبار الجهاز للتأكد من كفاءة التشغيل.</td>
+            </tr>
+            <tr>
+                <td style="background: #f9f9f9;">قطع الغيار المستبدلة</td>
+                <td>@(initialReport?.RequiredSpareParts ?? "لا يوجد")</td>
+            </tr>
+        </table>
+
+        <div class="section-title">ملخص التكاليف والضمان</div>
+        <table>
+            <tr>
+                <td style="background: #f9f9f9;">تكلفة الإصلاح (شاملة)</td>
+                <td style="font-size: 1.2em; font-weight: bold;">@(invoice?.TotalAmount.ToString("N2") ?? "0.00") ر.س</td>
+            </tr>
+            <tr>
+                <td style="background: #f9f9f9;">حالة الضمان</td>
+                <td>ضمان لمدة 30 يوماً على القطع المستبدلة وعمل اليد فقط من تاريخ الاستلام.</td>
+            </tr>
+        </table>
+
+        <div style="margin-top: 50px; display: flex; justify-content: space-between;">
+            <div style="text-align: center;">
+                <p>توقيع الفني المسؤول</p>
+                <br>____________
+            </div>
+            <div style="text-align: center;">
+                <p>ختم الورشة</p>
+                <div style="width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 50%; margin: auto; display: flex; align-items: center; justify-content: center; color: #ccc;">EMAC</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

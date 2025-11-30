@@ -1,0 +1,90 @@
+﻿@model EMAC.Models.Technician
+@{
+    ViewData["Title"] = "تفاصيل الفني والجدول";
+    var tasks = ViewBag.Tasks as List<EMAC.Models.ServiceRequest>;
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>ملف الفني: @Model.FullName</h1>
+        <a href="@Url.Action("Technicians", "Admin")" class="btn secondary-btn">عودة للقائمة</a>
+    </div>
+
+    <!-- كارت المعلومات الشخصية -->
+    <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; gap: 30px; flex-wrap: wrap;">
+        <div>
+            <h4 style="color: #666; margin-bottom: 5px;">التخصص</h4>
+            <p style="font-weight: bold; font-size: 1.1em;">@Model.Specialty</p>
+        </div>
+        <div>
+            <h4 style="color: #666; margin-bottom: 5px;">مناطق التغطية</h4>
+            <p style="font-weight: bold; font-size: 1.1em;">@Model.CoveredRegions</p>
+        </div>
+        <div>
+            <h4 style="color: #666; margin-bottom: 5px;">ساعات العمل</h4>
+            <p style="font-weight: bold; font-size: 1.1em;">@Model.WorkingHoursStart - @Model.WorkingHoursEnd</p>
+        </div>
+        <div>
+            <h4 style="color: #666; margin-bottom: 5px;">عدد المهام المسندة</h4>
+            <p style="font-weight: bold; font-size: 1.1em; color: var(--primary-color);">@tasks.Count()</p>
+        </div>
+    </div>
+
+    <h3 style="border-bottom: 3px solid var(--secondary-color); display: inline-block; padding-bottom: 5px; margin-bottom: 20px;">جدول المهام المسندة</h3>
+
+    @if (tasks == null || !tasks.Any())
+    {
+        <div style="text-align: center; padding: 40px; background: #f9f9f9; border-radius: 10px;">
+            <p style="color: #888;">لا توجد مهام مسندة لهذا الفني حالياً.</p>
+        </div>
+    }
+    else
+    {
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <table class="table" style="width: 100%; text-align: right; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f1f1f1; color: #333;">
+                        <th style="padding: 10px;">التاريخ</th>
+                        <th style="padding: 10px;">الوقت</th>
+                        <th style="padding: 10px;">العميل</th>
+                        <th style="padding: 10px;">الموقع</th>
+                        <th style="padding: 10px;">حالة المهمة</th>
+                        <th style="padding: 10px;">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in tasks)
+                    {
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 15px;">@task.AppointmentDate.ToShortDateString()</td>
+                            <td style="padding: 15px; font-weight: bold;">@task.TimeSlot</td>
+                            <td style="padding: 15px;">@task.CustomerName <br><small>@task.PhoneNumber</small></td>
+                            <td style="padding: 15px;">@task.Location</td>
+                            <td style="padding: 15px;">
+                                @if (task.Status == "Completed")
+                                {
+                                    <span style="color: green;"><i class="fas fa-check"></i> مكتملة</span>
+                                }
+                                else if (task.Status == "Confirmed")
+                                {
+                                    <span style="color: blue;">مجدولة</span>
+                                }
+                                else
+                                {
+                                    <span>@task.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <!-- زر سريع لإعادة تعيين المهمة من هنا أيضاً -->
+                                @if (task.Status != "Completed")
+                                {
+                                    <a href="@Url.Action("Requests", "Admin")" style="font-size: 0.8em; color: var(--secondary-color);">تغيير الفني</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,189 @@
+﻿@model EMAC.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "تتبع حالة الطلب";
+    var ticket = ViewBag.WorkshopTicket as EMAC.Models.WorkshopTicket;
+    var report = ViewBag.InitialReport as EMAC.Models.InitialReport;
+    var invoice = ViewBag.Invoice as EMAC.Models.Invoice;
+}
+
+<section class="page-section blue-bg hero-sub-page">
+    <div class="container text-center">
+        <h1 style="color: var(--secondary-color);">تتبع حالة طلب الصيانة</h1>
+        <p style="color: white;">أدخل رقم الطلب لمعرفة حالة جهازك، الموافقة على الإصلاح، أو سداد الفاتورة</p>
+    </div>
+</section>
+
+<section class="page-section light-bg">
+    <div class="container">
+        <div style="max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            <form asp-action="Search" method="post" style="margin-bottom: 30px;">
+                <div class="form-group">
+                    <label for="requestNumber" style="font-weight: bold; margin-bottom: 10px; display: block;">رقم الطلب (مثال: REQ-2025...)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" name="requestNumber" id="requestNumber" class="form-control" style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" placeholder="أدخل رقم الطلب هنا..." required>
+                        <button type="submit" class="btn primary-btn">بحث</button>
+                    </div>
+                </div>
+            </form>
+
+            @if (ViewBag.Error != null)
+            {
+                <div style="background: #ffe6e6; color: red; padding: 15px; border-radius: 6px; text-align: center;">
+                    @ViewBag.Error
+                </div>
+            }
+
+            @if (Model != null)
+            {
+                <div style="border-top: 2px dashed #eee; padding-top: 20px;">
+                    <h3 style="color: var(--primary-color); text-align: center;">تفاصيل الطلب</h3>
+                    <ul style="list-style: none; padding: 0; line-height: 2;">
+                        <li><strong>العميل:</strong> @Model.CustomerName</li>
+                        <!-- التعديل هنا: عرض الاسم العربي بدلاً من الكود -->
+                        <li><strong>نوع الخدمة:</strong> @(ViewBag.ServiceName ?? Model.ServiceType)</li>
+                        <li><strong>تاريخ الموعد:</strong> @Model.AppointmentDate.ToShortDateString() - @Model.TimeSlot</li>
+                        <li>
+                            <strong>حالة الطلب:</strong>
+                            <span style="font-weight: bold; color: var(--secondary-color);">
+                                @if (Model.Status == "Pending")
+                                {
+                                    <text>معلق (قيد المراجعة)</text>
+                                }
+                                else if (Model.Status == "Confirmed")
+                                {
+
+                                    <text>مؤكد (بانتظار الفني)</text>
+                                }
+                                else if (Model.Status == "InProcess")
+                                {
+
+                                    <text>قيد التنفيذ</text>
+                                }
+                                else if (Model.Status == "InWorkshop")
+                                {
+
+                                    <text>في الورشة</text>
+                                }
+                                else if (Model.Status == "PaymentPending")
+                                {
+
+                                    <text>بانتظار الدفع</text>
+                                }
+                                else if (Model.Status == "Completed")
+                                {
+
+                                    <text>مكتمل</text>
+                                }
+                                else if (Model.Status == "Closed")
+                                {
+
+                                    <text>مغلق</text>
+                                }
+                                else if (Model.Status == "Rejected")
+                                {
+
+                                    <text>مرفوض</text>
+                                }
+                                else
+                                {
+
+                                    <text>@Model.Status</text>
+                                }
+                            </span>
+                        </li>
+
+                        @if (ticket != null)
+                        {
+                            <li style="margin-top: 15px; background: #f0f8ff; padding: 15px; border-radius: 6px; border: 1px solid #cce5ff;">
+                                <strong><i class="fas fa-wrench"></i> حالة الجهاز في الورشة:</strong>
+                                @if (ticket.Status == "InWorkshop")
+                                {
+                                    <span>تم الاستلام (قيد الفحص)</span>
+                                }
+                                else if (ticket.Status == "Inspected")
+                                {
+
+                                    <span style="color: orange; font-weight:bold;">بانتظار موافقتك على التقرير</span>
+                                }
+                                else if (ticket.Status == "Approved_Fixing")
+                                {
+
+                                    <span style="color: blue;">جاري الإصلاح</span>
+                                }
+                                else if (ticket.Status == "Completed")
+                                {
+
+                                    <span style="color: green; font-weight:bold;">تم الانتهاء (بانتظار السداد)</span>
+                                }
+                                else if (ticket.Status == "Closed")
+                                {
+
+                                    <span style="color: green; font-weight:bold;">مغلق (تم التسليم)</span>
+                                }
+                                else
+                                {
+
+                                    <span>@ticket.Status</span>
+                                }
+                            </li>
+
+                            @if (report != null && ticket.Status == "Inspected" && !report.CustomerApproval)
+                            {
+                                <li style="margin-top: 15px; background: #fff3cd; padding: 20px; border-radius: 6px; border: 1px solid #ffeeba;">
+                                    <h4 style="color: #856404; margin-top:0;">تقرير الفحص وتكلفة الإصلاح</h4>
+                                    <p><strong>تشخيص العطل:</strong> @report.FaultDescription</p>
+                                    <p><strong>التكلفة التقديرية:</strong> <span style="font-size: 1.2em; font-weight: bold; color: #E60026;">@report.EstimatedCost ريال</span></p>
+
+                                    <div style="margin-top: 20px; text-align: center; display: flex; justify-content: center; gap: 15px;">
+                                        <form asp-action="CustomerDecision" method="post">
+                                            <input type="hidden" name="reportId" value="@report.Id" />
+                                            <button type="submit" name="decision" value="approve" class="btn primary-btn" style="background-color: green; border: none;">موافق على الإصلاح</button>
+                                        </form>
+                                        <form asp-action="CustomerDecision" method="post">
+                                            <input type="hidden" name="reportId" value="@report.Id" />
+                                            <button type="submit" name="decision" value="reject" class="btn secondary-btn" style="background-color: #666; border: none;">رفض</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            }
+
+                            @if (invoice != null && !invoice.IsPaid)
+                            {
+                                <li style="margin-top: 20px; background: #e6fffa; padding: 20px; border-radius: 6px; border: 1px solid #38b2ac; text-align: center;">
+                                    <h4 style="color: #2c7a7b; margin-top:0;">إصدار الفاتورة النهائية</h4>
+                                    <p style="font-size: 1.5em; font-weight: bold; color: #2c7a7b; margin: 10px 0;">@invoice.TotalAmount.ToString("N2") ر.س</p>
+                                    <p style="font-size: 0.9em; color: #666;">يرجى سداد المبلغ لإتمام عملية الاستلام</p>
+
+                                    <form asp-action="PayInvoice" method="post" style="margin-top: 15px;">
+                                        <input type="hidden" name="invoiceId" value="@invoice.Id" />
+                                        <button type="submit" class="btn primary-btn" style="background-color: #3182ce; border: none; width: 100%;">
+                                            <i class="far fa-credit-card"></i> دفع الآن (Visa/Mada)
+                                        </button>
+                                    </form>
+                                </li>
+                            }
+                            else if (invoice != null && invoice.IsPaid)
+                            {
+                                <li style="margin-top: 20px; text-align: center;">
+                                    <div style="background: #f0fff4; color: green; padding: 15px; border-radius: 6px; border: 1px solid #9ae6b4;">
+                                        <i class="fas fa-check-circle"></i> تم سداد الفاتورة بالكامل. شكراً لك!
+                                    </div>
+                                    <a href="@Url.Action("InvoicePrint", "Admin", new { id = invoice.Id })" target="_blank" class="btn secondary-btn" style="margin-top: 10px;">تحميل الفاتورة</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</section>

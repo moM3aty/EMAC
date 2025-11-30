@@ -1,0 +1,72 @@
+﻿@model IEnumerable<EMAC.Models.WorkshopTicket>
+
+@{
+    ViewData["Title"] = "لوحة تحكم الورشة";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <h1 style="color: var(--primary-color);">لوحة عمليات الورشة</h1>
+
+    <div style="margin-bottom: 30px; text-align: center;">
+        <a href="@Url.Action("ReceiveDevice", "Workshop")" class="btn primary-btn">
+            <i class="fas fa-plus"></i> استقبال جهاز جديد
+        </a>
+    </div>
+
+    <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background-color: var(--primary-color); color: white;">
+                <th style="padding: 15px;">كود الجهاز</th>
+                <th style="padding: 15px;">الموديل</th>
+                <th style="padding: 15px;">تاريخ الاستلام</th>
+                <th style="padding: 15px;">الحالة</th>
+                <th style="padding: 15px;">الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 15px;">@item.DeviceCode</td>
+                    <td style="padding: 15px;">@item.DeviceModel</td>
+                    <td style="padding: 15px;">@item.ReceivedAt.ToShortDateString()</td>
+                    <td style="padding: 15px;">
+                        <span style="padding: 5px 10px; border-radius: 4px; background-color: #eee;">
+                            @item.Status
+                        </span>
+                    </td>
+                    <td style="padding: 15px;">
+                        @if (item.Status == "InWorkshop")
+                        {
+                            <form asp-action="CreateReport" method="post" style="display:inline;">
+                                <input type="hidden" name="ticketId" value="@item.Id" />
+                                <input type="hidden" name="fault" value="عطل تجريبي" />
+                                <input type="hidden" name="parts" value="لا يوجد" />
+                                <input type="hidden" name="cost" value="150" />
+                                <input type="hidden" name="time" value="2 أيام" />
+                                <button type="submit" class="btn secondary-btn" style="padding: 5px 10px; font-size: 0.9em;">
+                                    إنشاء تقرير فحص
+                                </button>
+                            </form>
+                        }
+                        else if (item.Status == "Inspected")
+                        {
+                            <form asp-action="GenerateInvoice" method="post" style="display:inline;">
+                                <input type="hidden" name="ticketId" value="@item.Id" />
+                                <input type="hidden" name="labor" value="100" />
+                                <input type="hidden" name="parts" value="50" />
+                                <button type="submit" class="btn primary-btn" style="padding: 5px 10px; font-size: 0.9em; background-color:green;">
+                                    إصدار الفاتورة
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span style="color: green;"> مكتمل <i class="fas fa-check"></i></span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

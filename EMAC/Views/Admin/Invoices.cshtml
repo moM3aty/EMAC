@@ -1,0 +1,44 @@
+﻿@model IEnumerable<EMAC.Models.Invoice>
+
+@{
+    ViewData["Title"] = "أرشيف الفواتير";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>أرشيف الفواتير</h1>
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn secondary-btn">عودة للوحة التحكم</a>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <table class="table" style="width: 100%; text-align: right; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: var(--primary-color); color: white;">
+                    <th style="padding: 15px;">رقم الفاتورة</th>
+                    <th style="padding: 15px;">تاريخ الإصدار</th>
+                    <th style="padding: 15px;">العميل</th>
+                    <th style="padding: 15px;">كود الجهاز</th>
+                    <th style="padding: 15px;">الإجمالي</th>
+                    <th style="padding: 15px;">طباعة</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 15px;">#INV-@item.Id</td>
+                        <td style="padding: 15px;">@item.IssuedAt.ToShortDateString()</td>
+                        <td style="padding: 15px;">@(item.WorkshopTicket?.ServiceRequest?.CustomerName ?? "غير معرف")</td>
+                        <td style="padding: 15px;">@(item.WorkshopTicket?.DeviceCode ?? "-")</td>
+                        <td style="padding: 15px; font-weight: bold; color: green;">@item.TotalAmount.ToString("N2") ر.س</td>
+                        <td style="padding: 15px;">
+                            <a href="@Url.Action("InvoicePrint", "Admin", new { id = item.Id })" target="_blank" class="btn primary-btn" style="padding: 5px 15px; font-size: 0.9em;">
+                                <i class="fas fa-print"></i> طباعة
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

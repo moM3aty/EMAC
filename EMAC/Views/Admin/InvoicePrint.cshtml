@@ -1,0 +1,195 @@
+﻿@model EMAC.Models.Invoice
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>فاتورة ضريبية - @Model.Id</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #eee;
+            padding: 20px;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+            font-size: 16px;
+            line-height: 24px;
+            color: #555;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #004A99;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+            .header img {
+                max-width: 150px;
+            }
+
+        .invoice-title {
+            text-align: left;
+        }
+
+            .invoice-title h1 {
+                margin: 0;
+                color: #004A99;
+            }
+
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+            .info-table td {
+                padding: 5px;
+                vertical-align: top;
+            }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+            .items-table th {
+                background: #004A99;
+                color: white;
+                padding: 10px;
+                text-align: right;
+            }
+
+            .items-table td {
+                border-bottom: 1px solid #eee;
+                padding: 10px;
+            }
+
+        .total-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+            font-size: 1.2em;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        @@media print {
+            body
+
+        {
+            background: white;
+        }
+
+        .invoice-box {
+            box-shadow: none;
+            border: none;
+        }
+
+        .no-print {
+            display: none;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 20px;" class="no-print">
+        <button onclick="window.print()" style="padding: 10px 20px; background: #004A99; color: white; border: none; cursor: pointer;">طباعة الفاتورة</button>
+    </div>
+
+    <div class="invoice-box">
+        <div class="header">
+            <div>
+                <img src="/images/emac_logo.png" alt="EMAC Logo">
+                <p>مؤسسة الإخلاص الحديثة<br>للتكييف والتبريد</p>
+            </div>
+            <div class="invoice-title">
+                <h1>فاتورة ضريبية</h1>
+                <p>رقم الفاتورة: #INV-@Model.Id</p>
+                <p>التاريخ: @Model.IssuedAt.ToShortDateString()</p>
+            </div>
+        </div>
+
+        <table class="info-table">
+            <tr>
+                <td>
+                    <strong>بيانات العميل:</strong><br>
+                    الاسم: @(Model.WorkshopTicket?.ServiceRequest?.CustomerName ?? "عميل نقدي")<br>
+                    الهاتف: @(Model.WorkshopTicket?.ServiceRequest?.PhoneNumber ?? "-")<br>
+                    الموقع: @(Model.WorkshopTicket?.ServiceRequest?.Location ?? "-")
+                </td>
+                <td>
+                    <strong>تفاصيل الجهاز:</strong><br>
+                    الكود: @(Model.WorkshopTicket?.DeviceCode ?? "-")<br>
+                    الموديل: @(Model.WorkshopTicket?.DeviceModel ?? "-")<br>
+                    الرقم التسلسلي: @(Model.WorkshopTicket?.SerialNumber ?? "-")
+                </td>
+            </tr>
+        </table>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>الوصف</th>
+                    <th>القيمة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>تكلفة أجور اليد (الصيانة)</td>
+                    <td>@Model.LaborCost.ToString("N2") ر.س</td>
+                </tr>
+                <tr>
+                    <td>تكلفة قطع الغيار</td>
+                    <td>@Model.SparePartsCost.ToString("N2") ر.س</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <div class="total-row">
+                <span>المجموع الفرعي:</span>
+                <span>@((Model.LaborCost + Model.SparePartsCost).ToString("N2")) ر.س</span>
+            </div>
+            <div class="total-row">
+                <span>ضريبة القيمة المضافة (15%):</span>
+                <span>@Model.TaxAmount.ToString("N2") ر.س</span>
+            </div>
+            <div class="total-row" style="font-weight: bold; color: #E60026; margin-top: 10px;">
+                <span>الإجمالي النهائي:</span>
+                <span>@Model.TotalAmount.ToString("N2") ر.س</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>شكراً لتعاملكم مع مؤسسة الإخلاص الحديثة EMAC</p>
+            <p>الرقم الضريبي: 300xxxxxxxxxxxx | العنوان: الأحساء، المملكة العربية السعودية</p>
+        </div>
+    </div>
+</body>
+</html>

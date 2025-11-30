@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "المتجر الإلكتروني";
+}
+
+<!-- HERO Section for Store Page -->
+<section id="store-content" class="page-section blue-bg hero-sub-page">
+    <div class="container">
+        <h1 style="color: var(--secondary-color);">معرض EMAC الإلكتروني: أجهزة ومنتجات</h1>
+        <p style="color: white; font-size: 1.2em;">تصفح مجموعة واسعة من الأجهزة الكهربائية وأجهزة التكييف والتبريد، جميعها بجودة عالية وأسعار تنافسية.</p>
+        <a href="@Url.Action("Index", "Home")#contact" class="btn primary-btn large-btn" style="margin-top: 30px;"> اطلب عرض سعر أو استفسر الآن</a>
+    </div>
+</section>
+
+<!-- Product Categories Detail -->
+<section id="product-detail" class="page-section light-bg">
+    <div class="container">
+        <h2>1. المعرض (الأجهزة المنزلية والتجارية)</h2>
+        <p class="section-description">يضم المعرض كافة الأجهزة الحديثة والمبتكرة من الماركات العالمية لضمان أعلى أداء في منزلك أو منشأتك.</p>
+
+        <div class="all-products-grid">
+
+            <!-- مجموعة المكيفات والتبريد -->
+            <div class="product-group-card animate-on-scroll">
+                <i class="fas fa-snowflake icon"></i>
+                <h3>التكييف والتبريد</h3>
+                <ul>
+                    <li><i class="fas fa-caret-left"></i> مكيفات</li>
+                    <li><i class="fas fa-caret-left"></i> ثلاجات</li>
+                    <li><i class="fas fa-caret-left"></i> فريزرات (مجمدات)</li>
+                    <li><i class="fas fa-caret-left"></i> برادات</li>
+                </ul>
+            </div>
+
+            <!-- مجموعة أجهزة المطبخ -->
+            <div class="product-group-card animate-on-scroll">
+                <i class="fas fa-utensils icon"></i>
+                <h3>أجهزة المطبخ والطهي</h3>
+                <ul>
+                    <li><i class="fas fa-caret-left"></i> أجهزة صناعة القهوة</li>
+                    <li><i class="fas fa-caret-left"></i> أفران</li>
+                    <li><i class="fas fa-caret-left"></i> ميكروويف</li>
+                    <li><i class="fas fa-caret-left"></i> هيترات طبخ</li>
+                </ul>
+            </div>
+
+            <!-- مجموعة الغسيل والتسخين -->
+            <div class="product-group-card animate-on-scroll">
+                <i class="fas fa-bath icon"></i>
+                <h3>الغسيل والتسخين</h3>
+                <ul>
+                    <li><i class="fas fa-caret-left"></i> غسالات</li>
+                    <li><i class="fas fa-caret-left"></i> بويلرات</li>
+                    <li><i class="fas fa-caret-left"></i> سخانات فورية</li>
+                    <li><i class="fas fa-caret-left"></i> سخانات بويلر</li>
+                </ul>
+            </div>
+
+            <!-- مجموعة العرض والمراوح -->
+            <div class="product-group-card animate-on-scroll">
+                <i class="fas fa-tv icon"></i>
+                <h3>شاشات ومستلزمات أخرى</h3>
+                <ul>
+                    <li><i class="fas fa-caret-left"></i> شاشات عرض</li>
+                    <li><i class="fas fa-caret-left"></i> مراوح مختلفة</li>
+                    <li><i class="fas fa-caret-left"></i> مكابس كهربائية</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Industrial Components -->
+<section id="industrial-components" class="page-section">
+    <div class="container">
+        <h2>2. قطع غيار ومكونات المشاريع</h2>
+        <p class="section-description">تشمل هذه القائمة الأجزاء والمكونات الأساسية المتوفرة في المخازن، واللازمة لأعمال التركيب والصيانة.</p>
+
+        <div class="components-list-grid">
+            <div class="component-item animate-on-scroll">
+                <i class="fas fa-compress icon"></i>
+                <p>ضواغط (كمبروسرات) مختلفة</p>
+            </div>
+            <div class="component-item animate-on-scroll">
+                <i class="fas fa-bolt icon"></i>
+                <p>حماية جهد كهربائي</p>
+            </div>
+            <div class="component-item animate-on-scroll">
+                <i class="fas fa-fan icon"></i>
+                <p>لف موتورات</p>
+            </div>
+            <div class="component-item animate-on-scroll">
+                <i class="fas fa-microchip icon"></i>
+                <p>صمامات إلكترونية</p>
+            </div>
+            <div class="component-item animate-on-scroll">
+                <i class="fas fa-toolbox icon"></i>
+                <p>حاصدات مختلفة</p>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-top: 60px;">
+            <a href="@Url.Action("Index", "Home")#contact" class="btn primary-btn large-btn">اطلب منتجك الآن أو استفسر عن الأسعار <i class="fas fa-angle-left"></i></a>
+        </div>
+    </div>
+</section>
