@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "مولد الإعلانات الذكي";
+    var products = ViewBag.Products as List<SelectListItem>;
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="max-width: 800px; margin: 0 auto;">
+
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h1 style="color: var(--primary-color);"><i class="fas fa-magic"></i> مولد إعلانات السوشيال ميديا</h1>
+            <p style="color: #666;">اختر المنتج وسنقوم بصياغة إعلان احترافي جاهز للنشر فوراً</p>
+        </div>
+
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+            <div class="row" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <div style="flex: 1; min-width: 300px;">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="font-weight: bold; margin-bottom: 10px; display: block;">1. اختر المنتج:</label>
+                        <select id="productId" class="form-control" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #ccc;">
+                            <option value="">-- اختر من القائمة --</option>
+                            @if (products != null)
+                            {
+                                foreach (var p in products)
+                                {
+                                    <option value="@p.Value">@p.Text</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="font-weight: bold; margin-bottom: 10px; display: block;">2. نوع المنصة:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" onclick="generateAd('whatsapp')" class="btn secondary-btn" style="flex: 1;"><i class="fab fa-whatsapp"></i> واتساب</button>
+                            <button type="button" onclick="generateAd('social')" class="btn secondary-btn" style="flex: 1;"><i class="fab fa-instagram"></i> فيسبوك/انستا</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="flex: 1; min-width: 300px; border-right: 1px solid #eee; padding-right: 20px;">
+                    <label style="font-weight: bold; margin-bottom: 10px; display: block;">3. النتيجة (جاهزة للنسخ):</label>
+                    <textarea id="resultArea" rows="12" style="width: 100%; padding: 15px; border-radius: 6px; border: 1px solid #ddd; background: #f9f9f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" readonly></textarea>
+
+                    <button onclick="copyToClipboard()" class="btn primary-btn" style="width: 100%; margin-top: 10px;">
+                        <i class="fas fa-copy"></i> نسخ النص
+                    </button>
+                </div>
+            </div>
+
+            <div id="imagePreview" style="margin-top: 30px; text-align: center; display: none;">
+                <p style="font-weight: bold;">صورة المنتج للاستخدام:</p>
+                <img id="adImage" src="" style="max-height: 200px; border: 1px solid #ccc; padding: 5px; border-radius: 5px;" />
+            </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="@Url.Action("Dashboard", "Admin")" class="btn secondary-btn">العودة للوحة التحكم</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function generateAd(platform) {
+        const productId = document.getElementById('productId').value;
+        if (!productId) {
+            alert('الرجاء اختيار منتج أولاً');
+            return;
+        }
+
+        document.getElementById('resultArea').value = "جاري التوليد...";
+
+        try {
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('platform', platform);
+
+            const response = await fetch('/Admin/GenerateAdContent', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('resultArea').value = data.text;
+
+                const imgPreview = document.getElementById('imagePreview');
+                const imgEl = document.getElementById('adImage');
+                if (data.image) {
+                    imgEl.src = '/images/products/' + data.image;
+                    imgPreview.style.display = 'block';
+                } else {
+                    imgPreview.style.display = 'none';
+                }
+            } else {
+                alert('حدث خطأ');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('خطأ في الاتصال');
+        }
+    }
+
+    function copyToClipboard() {
+        const copyText = document.getElementById("resultArea");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("تم نسخ النص! يمكنك لصقه الآن في المنصة المطلوبة.");
+    }
+</script>

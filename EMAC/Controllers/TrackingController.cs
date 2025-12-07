@@ -40,9 +40,7 @@ namespace EMAC.Controllers
                 return View("Index");
             }
 
-            // --- التعديل الجديد: جلب الاسم العربي للخدمة بدلاً من الكود ---
             var serviceCategory = _context.ServiceCategories.FirstOrDefault(s => s.Code == request.ServiceType);
-            // نخزن الاسم العربي في ViewBag، وإذا لم يوجد نستخدم الكود كاحتياطي
             ViewBag.ServiceName = serviceCategory != null ? serviceCategory.ArabicName : request.ServiceType;
 
             var workshopTicket = _context.WorkshopTickets

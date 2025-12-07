@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "إدارة الفنيين";
-    // استقبال قاموس الخدمات
     var serviceNames = ViewBag.ServiceNames as Dictionary<string, string>;
 }
 
@@ -31,7 +30,6 @@
                 {
                     <tr style="border-bottom: 1px solid #eee;">
                         <td style="padding: 15px; font-weight: bold;">@item.FullName</td>
-                        <!-- التعديل هنا: عرض اسم التخصص بالعربية -->
                         <td style="padding: 15px;">
                             @if (item.Specialty == "General")
                             {

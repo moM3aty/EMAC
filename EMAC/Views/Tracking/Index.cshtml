@@ -48,7 +48,6 @@
                     <h3 style="color: var(--primary-color); text-align: center;">تفاصيل الطلب</h3>
                     <ul style="list-style: none; padding: 0; line-height: 2;">
                         <li><strong>العميل:</strong> @Model.CustomerName</li>
-                        <!-- التعديل هنا: عرض الاسم العربي بدلاً من الكود -->
                         <li><strong>نوع الخدمة:</strong> @(ViewBag.ServiceName ?? Model.ServiceType)</li>
                         <li><strong>تاريخ الموعد:</strong> @Model.AppointmentDate.ToShortDateString() - @Model.TimeSlot</li>
                         <li>

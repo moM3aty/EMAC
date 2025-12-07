@@ -1,0 +1,58 @@
+﻿@model IEnumerable<EMAC.Models.Product>
+
+@{
+    ViewData["Title"] = "إدارة المنتجات";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>إدارة منتجات المتجر</h1>
+        <div>
+            <a href="@Url.Action("EditProduct", "Admin")" class="btn primary-btn"><i class="fas fa-plus"></i> منتج جديد</a>
+            <a href="@Url.Action("Dashboard", "Admin")" class="btn secondary-btn">عودة</a>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <table class="table" style="width: 100%; text-align: right;">
+            <thead>
+                <tr style="background-color: var(--primary-color); color: white;">
+                    <th style="padding: 15px;">الصورة</th>
+                    <th>اسم المنتج</th>
+                    <th>القسم</th>
+                    <th>السعر</th>
+                    <th>الماركة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 10px;">
+                            <img src="~/images/products/@(string.IsNullOrEmpty(item.ImageUrl) ? "default.png" : item.ImageUrl)" style="width: 50px; height: 50px; object-fit: contain; border: 1px solid #eee;" onerror="this.src='https://via.placeholder.com/50'" />
+                        </td>
+                        <td style="font-weight: bold;">@item.Name</td>
+                        <td>@(item.Category?.Name ?? "-")</td>
+                        <td>
+                            @item.Price.ToString("N0")
+                            @if (item.OldPrice.HasValue && item.OldPrice > item.Price)
+                            {
+                                <br>
+                        
+                                <small style="text-decoration: line-through; color: #999;">@item.OldPrice</small>
+                            }
+                        </td>
+                        <td>@item.Brand</td>
+                        <td>
+                            <a href="@Url.Action("EditProduct", "Admin", new { id = item.Id })" class="btn secondary-btn" style="padding: 5px 10px; font-size: 0.8em;"><i class="fas fa-edit"></i></a>
+                            <form asp-action="DeleteProduct" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذا المنتج؟');">
+                                <button type="submit" class="btn primary-btn" style="padding: 5px 10px; font-size: 0.8em; background-color: #dc3545; border:none;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

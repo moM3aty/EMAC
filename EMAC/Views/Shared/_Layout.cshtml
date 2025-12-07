@@ -8,12 +8,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - EMAC | مؤسسة الإخلاص الحديثة</title>
     <meta name="description" content="EMAC - مؤسسة الإخلاص الحديثة للتكييف والتبريد.">
+
+    <link rel="manifest" href="~/manifest.json">
+    <meta name="theme-color" content="#004A99">
+    <link rel="apple-touch-icon" href="~/images/emac_logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
     <link rel="stylesheet" href="~/css/emac_style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="~/images/logo.jpeg" rel="icon" />
 </head>
 <body>
     <header style="background-color: #004A99;">
@@ -31,38 +37,46 @@
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <div class="main-nav-wrapper">
-                <nav>
-                    <ul>
-                        <li><a href="@Url.Action("Index", "Home")">الرئيسية</a></li>
-                        <li><a href="@Url.Action("Index", "Services")">خدماتنا</a></li>
-                        <li><a href="@Url.Action("Index", "Store")">المتجر</a></li>
-                        <li><a href="@Url.Action("Index", "Automation")">نظام الإدارة</a></li> <!-- تمت الإضافة هنا -->
-                        <li><a href="@Url.Action("Index", "Tracking")">تتبع طلبك</a></li>
+            <nav>
+                <ul>
+                    <li><a href="@Url.Action("Index", "Home")">الرئيسية</a></li>
+                    <li><a href="@Url.Action("Index", "Services")">خدماتنا</a></li>
+                    <li><a href="@Url.Action("Index", "Store")">المتجر</a></li>
+                    <li><a href="@Url.Action("Index", "Automation")">نظام الإدارة</a></li>
+                    <li><a href="@Url.Action("Index", "Tracking")">تتبع طلبك</a></li>
 
-                        @* روابط ديناميكية تظهر فقط للمسؤولين أو الفنيين *@
-                        @{
-                            var isAdmin = HttpContextAccessor.HttpContext.Session.GetString("IsAdmin");
-                            var isTech = HttpContextAccessor.HttpContext.Session.GetString("TechId");
-                        }
+                    <li>
+                        <a href="@Url.Action("Favorites", "Store")" title="المفضلة" style="position: relative;">
+                            <i class="fas fa-heart"></i>
+                            @{
+                                var favCookie = Context.Request.Cookies["EmacFavs"];
+                                int count = !string.IsNullOrEmpty(favCookie) ? favCookie.Split(',', StringSplitOptions.RemoveEmptyEntries).Length : 0;
+                            }
+                            @if (count > 0)
+                            {
+                                <span id="fav-count" style="position: absolute; top: 0; right: 0; background: #e60026; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.7em; display: flex; align-items: center; justify-content: center;">@count</span>
+                            }
+                        </a>
+                    </li>
 
-                        @if (isAdmin == "true")
-                        {
-                            <li><a href="@Url.Action("Dashboard", "Admin")" style="color: #ffcc00;">لوحة الإدارة</a></li>
-                        }
-                        else if (!string.IsNullOrEmpty(isTech))
-                        {
-                            <li><a href="@Url.Action("Dashboard", "Technician")" style="color: #00ffcc;">بوابة الفني</a></li>
-                        }
-                        else
-                        {
-                            <li><a href="@Url.Action("Index", "Home")#contact">اتصل بنا</a></li>
-                        }
-                    </ul>
-                </nav>
-                <div class="contact-header">
-                    <a href="tel:+966510891747" class="phone-number">966510891747</a>
-                </div>
+                    @{
+                        var isAdmin = HttpContextAccessor.HttpContext.Session.GetString("IsAdmin");
+                        var isTech = HttpContextAccessor.HttpContext.Session.GetString("TechId");
+                    }
+
+                    @if (isAdmin == "true")
+                    {
+                        <li><a href="@Url.Action("Dashboard", "Admin")" style="color: #ffcc00; font-weight: bold;"><i class="fas fa-tachometer-alt"></i> لوحة الإدارة</a></li>
+                    }
+                    else if (!string.IsNullOrEmpty(isTech))
+                    {
+                        <li><a href="@Url.Action("Dashboard", "Technician")" style="color: #00ffcc; font-weight: bold;"><i class="fas fa-tools"></i> بوابة الفني</a></li>
+                    }
+
+                </ul>
+            </nav>
+            <div class="contact-header">
+                <a href="tel:+966510891747" class="phone-number">966510891747</a>
             </div>
         </div>
     </header>
@@ -87,9 +101,8 @@
                     <h3>روابط هامة</h3>
                     <ul>
                         <li><a href="@Url.Action("Index", "Services")">حجز صيانة</a></li>
-                        <li><a href="@Url.Action("Index", "Automation")">عن النظام</a></li>
+                        <li><a href="@Url.Action("Favorites", "Store")">المفضلة</a></li>
                         <li><a href="@Url.Action("Login", "Admin")">دخول الموظفين</a></li>
-                        <li><a href="@Url.Action("Login", "Technician")">دخول الفنيين</a></li>
                         <li><a href="@Url.Action("Privacy", "Home")">سياسة الخصوصية</a></li>
                     </ul>
                 </div>
@@ -100,8 +113,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p style="margin:0; padding:0;">&copy; @System.DateTime.Now.Year مؤسسة الإخلاص الحديثة EMAC. جميع الحقوق محفوظة.</p>
-                <p style="margin:0; padding:0;">تم التصميم بواسطة GMT WEB</p>
+                <p>&copy; @System.DateTime.Now.Year مؤسسة الإخلاص الحديثة EMAC. جميع الحقوق محفوظة.</p>
             </div>
         </div>
     </footer>
@@ -114,6 +126,20 @@
             <i class="fas fa-phone-alt"></i>
         </a>
     </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 
     <script src="~/js/main.js"></script>
     @await RenderSectionAsync("Scripts", required: false)

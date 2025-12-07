@@ -249,3 +249,4 @@ D:\Dev\EMAC\EMAC\obj\Debug\net8.0\refint\EMAC.dll
 D:\Dev\EMAC\EMAC\obj\Debug\net8.0\EMAC.pdb
 D:\Dev\EMAC\EMAC\obj\Debug\net8.0\EMAC.genruntimeconfig.cache
 D:\Dev\EMAC\EMAC\obj\Debug\net8.0\ref\EMAC.dll
+D:\Dev\EMAC\EMAC\obj\Debug\net8.0\EMAC.sourcelink.json

@@ -1,0 +1,84 @@
+﻿@model IEnumerable<EMAC.Models.Product>
+
+@{
+    ViewData["Title"] = "المنتجات المفضلة";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="color: var(--secondary-color);"><i class="fas fa-heart"></i> قائمة أمنياتي</h1>
+        <p style="color: #666;">المنتجات التي قمت بحفظها للعودة إليها لاحقاً</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 50px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+            <i class="far fa-heart fa-4x" style="color: #eee; margin-bottom: 20px;"></i>
+            <h3>القائمة فارغة حالياً</h3>
+            <p>لم تقم بإضافة أي منتجات للمفضلة بعد.</p>
+            <a href="@Url.Action("Index", "Store")" class="btn primary-btn mt-3">تصفح المتجر</a>
+        </div>
+    }
+    else
+    {
+        <div class="all-products-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+            @foreach (var product in Model)
+            {
+                <div class="product-card" id="prod-card-@product.Id" style="background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: transform 0.3s; border: 1px solid #eee;">
+
+                    <span onclick="removeFromFav(@product.Id)" style="position: absolute; top: 10px; left: 10px; background: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; color: #e60026;">
+                        <i class="fas fa-times"></i>
+                    </span>
+
+                    <a href="@Url.Action("Details", "Store", new { id = product.Id })" style="display: block; text-decoration: none;">
+                        <div style="height: 200px; display: flex; align-items: center; justify-content: center; padding: 20px; background: #fff;">
+                            <img src="~/images/products/@(string.IsNullOrEmpty(product.ImageUrl) ? "default.png" : product.ImageUrl)"
+                                 alt="@product.Name"
+                                 style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                        </div>
+
+                        <div style="padding: 15px;">
+                            <h3 style="font-size: 1em; color: #333; margin: 5px 0 10px 0; height: 40px; overflow: hidden; line-height: 1.4;">
+                                @product.Name
+                            </h3>
+                            <div style="display: flex; align-items: baseline; gap: 10px;">
+                                <span style="font-size: 1.2em; font-weight: bold; color: #333;">@product.Price.ToString("N0") <small>ر.س</small></span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div style="padding: 0 15px 15px 15px;">
+                        @{
+                            string msg = $"مرحباً، أرغب في طلب المنتج من المفضلة: {product.Name}";
+                            string waLink = $"https://wa.me/966564133825?text={System.Net.WebUtility.UrlEncode(msg)}";
+                        }
+                        <a href="@waLink" target="_blank" class="btn primary-btn" style="width: 100%; display: block; text-align: center; font-size: 0.9em;">
+                            <i class="fab fa-whatsapp"></i> اطلب الآن
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script>
+    async function removeFromFav(id) {
+        if(!confirm('حذف من المفضلة؟')) return;
+
+        try {
+            const response = await fetch('/Store/ToggleFavorite?id=' + id, { method: 'POST' });
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('prod-card-' + id).remove();
+                const badge = document.getElementById('fav-count');
+                if(badge) badge.textContent = data.count;
+
+                if(data.count === 0) location.reload();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+</script>

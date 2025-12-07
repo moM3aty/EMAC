@@ -10,7 +10,6 @@
         <a href="@Url.Action("Technicians", "Admin")" class="btn secondary-btn">عودة للقائمة</a>
     </div>
 
-    <!-- كارت المعلومات الشخصية -->
     <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; gap: 30px; flex-wrap: wrap;">
         <div>
             <h4 style="color: #666; margin-bottom: 5px;">التخصص</h4>
@@ -75,7 +74,6 @@
                                 }
                             </td>
                             <td>
-                                <!-- زر سريع لإعادة تعيين المهمة من هنا أيضاً -->
                                 @if (task.Status != "Completed")
                                 {
                                     <a href="@Url.Action("Requests", "Admin")" style="font-size: 0.8em; color: var(--secondary-color);">تغيير الفني</a>

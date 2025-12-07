@@ -32,22 +32,12 @@ namespace EMAC.Controllers
 
             if (!potentialTechs.Any())
             {
-                return Json(new { success = true, slots = new List<string>(), message = "لا يوجد فني متاح في منطقتك حالياً." });
+                return Json(new { success = true, slots = new List<string>(), message = "لا يوجد فني متاح في منطقتك حالياً لهذه الخدمة." });
             }
 
             var allSlots = new List<string> { "08:00 ص", "09:00 ص", "10:00 ص", "11:00 ص", "01:00 م", "02:00 م", "03:00 م", "04:00 م", "05:00 م" };
-
-
-            var busySlots = _context.ServiceRequests
-                .Where(r => r.AppointmentDate.Date == date.Date && r.TechnicianId != null)
-                .ToList() 
-                .Where(r => potentialTechs.Any(t => t.Id == r.TechnicianId)) 
-                .Select(r => r.TimeSlot)
-                .Distinct()
-                .ToList();
-
-
             var availableSlots = new List<string>();
+
             foreach (var slot in allSlots)
             {
                 bool isAnyTechFree = potentialTechs.Any(tech =>
@@ -58,10 +48,7 @@ namespace EMAC.Controllers
                     )
                 );
 
-                if (isAnyTechFree)
-                {
-                    availableSlots.Add(slot);
-                }
+                if (isAnyTechFree) availableSlots.Add(slot);
             }
 
             if (!availableSlots.Any())
@@ -83,7 +70,6 @@ namespace EMAC.Controllers
 
             try
             {
-
                 var suitableTechs = _context.Technicians
                     .AsEnumerable()
                     .Where(t => t.IsAvailable(request.Location, request.ServiceType, request.AppointmentDate))
@@ -101,17 +87,16 @@ namespace EMAC.Controllers
                     if (!isBusy)
                     {
                         selectedTech = tech;
-                        break; 
+                        break;
                     }
                 }
 
                 if (selectedTech == null)
                 {
-                    return Json(new { success = false, message = "عذراً، الموعد المختار لم يعد متاحاً (تم حجزه للتو). يرجى اختيار موعد آخر." });
+                    return Json(new { success = false, message = "عذراً، الموعد المختار لم يعد متاحاً." });
                 }
 
                 request.TechnicianId = selectedTech.Id;
-
                 request.GenerateIdentifiers();
                 request.Status = "Confirmed";
                 request.CreatedAt = DateTime.Now;
@@ -119,15 +104,29 @@ namespace EMAC.Controllers
                 _context.ServiceRequests.Add(request);
                 await _context.SaveChangesAsync();
 
-                string message = $"مرحباً {request.CustomerName}، تم تأكيد طلبك. رقم الطلب: {request.RequestNumber}. الفني المسؤول: {selectedTech.FullName}";
-                await _notificationService.SendSmsAsync(request.PhoneNumber, message);
+
+
+                string adminNumber = "966564133825"; 
+
+                string message = $"⚠️ *طلب صيانة جديد (تأكيد العميل)*\n" +
+                                 $"رقم الطلب: {request.RequestNumber}\n" +
+                                 $"العميل: {request.CustomerName}\n" +
+                                 $"الخدمة: {request.ServiceType}\n" +
+                                 $"الموعد: {request.AppointmentDate.ToShortDateString()} | {request.TimeSlot}\n" +
+                                 $"الموقع: {request.Location}\n" +
+                                 $"الفني المعين: {selectedTech.FullName}\n" +
+                                 $"الوصف: {request.ProblemDescription}\n\n" +
+                                 $"يرجى تأكيد الاستلام.";
+
+                string whatsappUrl = $"https://wa.me/{adminNumber}?text={System.Net.WebUtility.UrlEncode(message)}";
 
                 return Json(new
                 {
                     success = true,
                     requestNumber = request.RequestNumber,
                     deviceCode = request.DeviceCode,
-                    message = "تم الحجز وتعيين الفني بنجاح"
+                    whatsappUrl = whatsappUrl, 
+                    message = "تم تسجيل الحجز. سيتم توجيهك للواتساب لإرسال التفاصيل للإدارة."
                 });
             }
             catch (Exception ex)

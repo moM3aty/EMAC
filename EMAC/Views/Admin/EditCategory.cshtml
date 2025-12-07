@@ -1,0 +1,54 @@
+﻿@model EMAC.Models.Category
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "إضافة قسم جديد" : "تعديل القسم";
+    var parents = ViewBag.ParentCategories as List<EMAC.Models.Category>;
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+        <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">@ViewData["Title"]</h2>
+
+        <form asp-action="SaveCategory" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" /> 
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">اسم القسم</label>
+                <input asp-for="Name" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">القسم الرئيسي (اتركه فارغاً ليكون رئيسياً)</label>
+                <select asp-for="ParentId" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="">-- قسم رئيسي --</option>
+                    @if (parents != null)
+                    {
+                        foreach (var p in parents)
+                        {
+                            <option value="@p.Id">@p.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">صورة القسم</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div style="margin-top: 10px;">
+                        <p>الصورة الحالية:</p>
+                        <img src="~/images/categories/@Model.ImageUrl" style="width: 100px; border-radius: 5px;" />
+                    </div>
+                }
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn primary-btn" style="flex: 1;">حفظ</button>
+                <a href="@Url.Action("Categories", "Admin")" class="btn secondary-btn" style="flex: 1; text-align: center;">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>

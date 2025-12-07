@@ -66,11 +66,9 @@ namespace EMAC.Controllers
             return View(tasks);
         }
 
-        // --- إجراء 1: إتمام الإصلاح في الموقع (مع الفوترة) ---
         [HttpPost]
         public IActionResult FinishOnSite(int requestId, decimal laborCost, decimal partsCost, string notes)
         {
-            // التحقق من صحة المدخلات (Validation)
             if (laborCost <= 0)
             {
                 TempData["Error"] = "خطأ: يجب إدخال قيمة أجور اليد (أكبر من صفر).";
@@ -88,13 +86,12 @@ namespace EMAC.Controllers
 
             if (request != null && request.TechnicianId.ToString() == currentTechId)
             {
-                // 1. إنشاء تذكرة ورشة (سجل فني)
                 var ticket = new WorkshopTicket
                 {
                     ServiceRequestId = request.Id,
                     DeviceModel = "صيانة خارجية (On-Site)",
                     SerialNumber = "N/A",
-                    PhysicalCondition = notes, // نستخدم الملاحظات الحقيقية
+                    PhysicalCondition = notes, 
                     Accessories = "لا يوجد (صيانة خارجية)",
                     Status = "Completed",
                     ReceivedAt = DateTime.Now
@@ -103,7 +100,6 @@ namespace EMAC.Controllers
                 _context.WorkshopTickets.Add(ticket);
                 _context.SaveChanges();
 
-                // 2. إنشاء تقرير فني تلقائي
                 var report = new InitialReport
                 {
                     WorkshopTicketId = ticket.Id,
@@ -111,26 +107,24 @@ namespace EMAC.Controllers
                     RequiredSpareParts = partsCost > 0 ? "قطع غيار متنوعة" : "لا يوجد",
                     EstimatedCost = laborCost + partsCost,
                     EstimatedTime = "تم الإنجاز",
-                    TechnicianNotes = notes, // نستخدم الملاحظات الحقيقية
+                    TechnicianNotes = notes, 
                     CustomerApproval = true,
                     CreatedAt = DateTime.Now
                 };
                 _context.InitialReports.Add(report);
 
-                // 3. إنشاء الفاتورة
                 var invoice = new Invoice
                 {
                     WorkshopTicketId = ticket.Id,
                     LaborCost = laborCost,
                     SparePartsCost = partsCost,
                     IsPaid = false,
-                    PaymentMethod = "Pending", // --- التصحيح: إضافة قيمة افتراضية للحقل الإلزامي ---
+                    PaymentMethod = "Pending",
                     IssuedAt = DateTime.Now
                 };
                 invoice.CalculateTotal();
                 _context.Invoices.Add(invoice);
 
-                // 4. تحديث حالة الطلب
                 request.Status = "PaymentPending";
 
                 _context.SaveChanges();
@@ -138,11 +132,9 @@ namespace EMAC.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        // --- إجراء 2: نقل الجهاز للورشة ---
         [HttpPost]
         public IActionResult TransferToWorkshop(int requestId, string notes)
         {
-            // التحقق من وجود ملاحظات الاستلام
             if (string.IsNullOrWhiteSpace(notes))
             {
                 TempData["Error"] = "خطأ: يرجى كتابة ملاحظات الاستلام قبل النقل للورشة.";

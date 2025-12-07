@@ -20,7 +20,6 @@ namespace EMAC.Controllers
         {
             var viewModel = new ServicePageViewModel();
 
-            // 1. جلب الخدمات من قاعدة البيانات
             viewModel.ServicesList = _context.ServiceCategories
                 .Where(s => s.IsActive)
                 .Select(s => new SelectListItem
@@ -29,7 +28,6 @@ namespace EMAC.Controllers
                     Text = s.ArabicName
                 }).ToList();
 
-            // 2. جلب المناطق ومعالجتها في الذاكرة
             var rawRegions = _context.Technicians
                 .Select(t => t.CoveredRegions)
                 .ToList();

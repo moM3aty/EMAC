@@ -37,7 +37,6 @@
                             <span style="color: #E60026; font-size: 0.9em;">@item.AppointmentDate.ToShortDateString() | @item.TimeSlot</span>
                         </td>
 
-                        <!-- عرض اسم الفني الحالي -->
                         <td style="padding: 15px;">
                             @if (item.AssignedTechnician != null)
                             {
@@ -49,7 +48,6 @@
                             }
                         </td>
 
-                        <!-- نموذج تغيير الفني -->
                         <td style="padding: 15px;">
                             @if (item.Status != "Completed" && item.Status != "Closed")
                             {

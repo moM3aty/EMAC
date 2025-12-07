@@ -7,6 +7,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EMAC.Controllers
 {
@@ -14,15 +19,14 @@ namespace EMAC.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AdminController(ApplicationDbContext context, IConfiguration configuration)
+        public AdminController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
         }
-
-        // ... (Login, Logout, Dashboard, Requests, Invoices, InvoicePrint, Services, EditService, SaveService, DeleteService - كما هي) ...
-        // (تأكد من وجود باقي الدوال التي أنشأناها سابقاً هنا)
 
         [HttpGet]
         public IActionResult Login()
@@ -51,6 +55,7 @@ namespace EMAC.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
 
         public IActionResult Dashboard()
         {
@@ -107,6 +112,7 @@ namespace EMAC.Controllers
             return RedirectToAction("Requests");
         }
 
+
         public IActionResult Invoices()
         {
             if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
@@ -128,6 +134,7 @@ namespace EMAC.Controllers
             if (invoice == null) return NotFound();
             return View(invoice);
         }
+
 
         public IActionResult Services()
         {
@@ -169,15 +176,11 @@ namespace EMAC.Controllers
             return RedirectToAction("Services");
         }
 
-        // --- التعديل هنا: جلب أسماء الخدمات لصفحة الفنيين ---
         public IActionResult Technicians()
         {
             if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
             var techs = _context.Technicians.ToList();
-
-            // إرسال قاموس الخدمات لترجمة التخصصات
             ViewBag.ServiceNames = _context.ServiceCategories.ToDictionary(s => s.Code, s => s.ArabicName);
-
             return View(techs);
         }
 
@@ -235,6 +238,206 @@ namespace EMAC.Controllers
             var tech = _context.Technicians.Find(id);
             if (tech != null) { _context.Technicians.Remove(tech); _context.SaveChanges(); }
             return RedirectToAction("Technicians");
+        }
+
+
+        public IActionResult Categories()
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+            var categories = _context.Categories.Include(c => c.ParentCategory).ToList();
+            return View(categories);
+        }
+
+        [HttpGet]
+        public IActionResult EditCategory(int? id)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+            ViewBag.ParentCategories = _context.Categories.Where(c => c.ParentId == null && c.Id != id).ToList();
+
+            if (id == null) return View(new Category());
+            var category = _context.Categories.Find(id);
+            if (category == null) return NotFound();
+            return View(category);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveCategory(Category model, IFormFile imageFile)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+
+            if (ModelState.IsValid)
+            {
+                if (imageFile != null)
+                {
+                    string folder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "categories");
+                    if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    string filePath = Path.Combine(folder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+                    model.ImageUrl = fileName;
+                }
+
+                if (model.Id == 0) _context.Categories.Add(model);
+                else _context.Categories.Update(model);
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Categories");
+            }
+
+            ViewBag.ParentCategories = _context.Categories.Where(c => c.ParentId == null && c.Id != model.Id).ToList();
+            return View("EditCategory", model);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteCategory(int id)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+            var category = _context.Categories.Find(id);
+            if (category != null) { _context.Categories.Remove(category); _context.SaveChanges(); }
+            return RedirectToAction("Categories");
+        }
+
+
+        public IActionResult Products()
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+            var products = _context.Products.Include(p => p.Category).OrderByDescending(p => p.CreatedAt).ToList();
+            return View(products);
+        }
+
+        [HttpGet]
+        public IActionResult EditProduct(int? id)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+
+            var categories = _context.Categories
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ParentId != null ? $"{c.ParentCategory.Name} > {c.Name}" : c.Name
+                })
+                .ToList();
+            ViewBag.Categories = categories;
+
+            if (id == null) return View(new Product());
+            var product = _context.Products.Find(id);
+            if (product == null) return NotFound();
+            return View(product);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveProduct(Product model, IFormFile imageFile)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+
+            if (model.Id > 0) ModelState.Remove("ImageUrl");
+
+            ModelState.Remove("Category");
+            ModelState.Remove("ImageUrl");
+
+            if (ModelState.IsValid)
+            {
+                if (imageFile != null)
+                {
+                    string folder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products");
+                    if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    string filePath = Path.Combine(folder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+                    model.ImageUrl = fileName;
+                }
+                else if (model.Id > 0)
+                {
+                    var existingProduct = _context.Products.AsNoTracking().FirstOrDefault(p => p.Id == model.Id);
+                    if (existingProduct != null) model.ImageUrl = existingProduct.ImageUrl;
+                }
+
+                if (string.IsNullOrEmpty(model.ImageUrl)) model.ImageUrl = "default.png";
+
+                if (model.Id == 0) _context.Products.Add(model);
+                else _context.Products.Update(model);
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Products");
+            }
+
+            var categories = _context.Categories
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.ParentId != null ? $"{c.ParentCategory.Name} > {c.Name}" : c.Name
+                })
+                .ToList();
+            ViewBag.Categories = categories;
+
+            return View("EditProduct", model);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteProduct(int id)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+            var product = _context.Products.Find(id);
+            if (product != null) { _context.Products.Remove(product); _context.SaveChanges(); }
+            return RedirectToAction("Products");
+        }
+
+        [HttpGet]
+        public IActionResult AdGenerator()
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+            ViewBag.Products = _context.Products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList();
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult GenerateAdContent(int productId, string platform)
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true") return RedirectToAction("Login");
+
+            var product = _context.Products.Include(p => p.Category).FirstOrDefault(p => p.Id == productId);
+            if (product == null) return NotFound();
+
+            string adText = "";
+            string phone = "+966564133825";
+
+            if (platform == "whatsapp")
+            {
+                adText = $"*عرض خاص من مؤسسة الإخلاص الحديثة (EMAC)* 🔥\n\n" +
+                         $"*{product.Name}*\n" +
+                         $"✅ الماركة: {product.Brand}\n" +
+                         $"✅ السعة: {product.SizeOrCapacity}\n" +
+                         $"----------------------------\n" +
+                         $"💰 *السعر: {product.Price} ريال فقط* (شامل الضريبة)\n" +
+                         (product.OldPrice.HasValue ? $"❌ ~كان {product.OldPrice}~ \n" : "") +
+                         $"----------------------------\n" +
+                         $"{product.Description}\n\n" +
+                         $"🚚 التوصيل والتركيب متاح!\n" +
+                         $"🛒 للطلب تواصل معنا مباشرة: https://wa.me/{phone.Replace("+", "")}";
+            }
+            else
+            {
+                adText = $"تحديثات عروض الصيف من EMAC! ❄️☀️\n\n" +
+                         $"استمتع بأفضل تبريد وأداء مع {product.Name} \n\n" +
+                         $"🔹 الموديل: {product.Brand} - {product.SizeOrCapacity}\n" +
+                         $"🔹 السعر: {product.Price} ريال 💵\n" +
+                         $"🔹 ضمان الوكيل + تركيب احترافي\n\n" +
+                         $"📍 موقعنا: الأحساء\n" +
+                         $"📞 للحجز والطلب: {phone}\n\n" +
+                         $"#تكييف #تبريد #EMAC #عروض #{product.Brand.Replace(" ", "_")} #السعودية";
+            }
+
+            return Json(new { success = true, text = adText, image = product.ImageUrl });
         }
     }
 }

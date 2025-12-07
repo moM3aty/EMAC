@@ -1,0 +1,86 @@
+﻿@model EMAC.Models.Product
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "إضافة منتج جديد" : "تعديل المنتج";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+
+        <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">@ViewData["Title"]</h2>
+
+        <form asp-action="SaveProduct" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" />
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">اسم المنتج</label>
+                        <input asp-for="Name" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required />
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">القسم</label>
+                        <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required>
+                            <option value="">-- اختر القسم --</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">السعر الحالي</label>
+                            <input asp-for="Price" type="number" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" required />
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">السعر القديم (للخصم)</label>
+                            <input asp-for="OldPrice" type="number" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+                        </div>
+                    </div>
+                </div>
+
+                <div style="flex: 1; min-width: 300px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">الماركة</label>
+                            <input asp-for="Brand" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" placeholder="Samsung, LG..." />
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; font-weight: bold; margin-bottom: 8px;">الحجم / السعة</label>
+                            <input asp-for="SizeOrCapacity" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" placeholder="18000 BTU, 10L..." />
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">الوصف</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input asp-for="IsFeatured" type="checkbox" style="width: 20px; height: 20px;" />
+                            <span>منتج مميز (يظهر في البداية)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">صورة المنتج</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div style="margin-top: 10px;">
+                        <p>الصورة الحالية:</p>
+                        <img src="~/images/products/@Model.ImageUrl" style="width: 100px; height: 100px; object-fit: contain; border: 1px solid #eee;" />
+                    </div>
+                }
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn primary-btn" style="flex: 1;">حفظ المنتج</button>
+                <a href="@Url.Action("Products", "Admin")" class="btn secondary-btn" style="flex: 1; text-align: center;">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>

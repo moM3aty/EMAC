@@ -1,0 +1,97 @@
+﻿@model EMAC.Models.Product
+
+@{
+    ViewData["Title"] = Model.Name;
+    var relatedProducts = ViewBag.RelatedProducts as IEnumerable<EMAC.Models.Product>;
+
+    string msg = $"مرحباً، أرغب في الاستفسار عن المنتج: {Model.Name} (السعر: {Model.Price} ر.س)";
+    string waLink = $"https://wa.me/966564133825?text={System.Net.WebUtility.UrlEncode(msg)}";
+}
+
+<div class="container" style="padding-top: 120px; padding-bottom: 50px;">
+
+    <nav aria-label="breadcrumb" style="margin-bottom: 20px;">
+        <ol class="breadcrumb" style="background: none; padding: 0;">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Store")">المتجر</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Products", "Store", new { categoryId = Model.CategoryId })">@Model.Category?.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="product-details-container" style="background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); overflow: hidden;">
+        <div style="display: flex; flex-wrap: wrap;">
+
+            <div style="flex: 1; min-width: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative;">
+                @if (Model.DiscountPercentage > 0)
+                {
+                    <span style="position: absolute; top: 20px; right: 20px; background-color: #e60026; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; z-index: 2;">
+                        خصم @Model.DiscountPercentage%
+                    </span>
+                }
+                <img src="~/images/products/@(string.IsNullOrEmpty(Model.ImageUrl) ? "default.png" : Model.ImageUrl)"
+                     alt="@Model.Name"
+                     style="max-width: 100%; max-height: 400px; object-fit: contain; transition: transform 0.3s;"
+                     onmouseover="this.style.transform='scale(1.05)'"
+                     onmouseout="this.style.transform='scale(1)'">
+            </div>
+
+            <div style="flex: 1; min-width: 300px; padding: 40px;">
+                <h6 style="color: #666; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9em;">@Model.Brand</h6>
+                <h1 style="color: var(--primary-color); margin: 10px 0 20px 0;">@Model.Name</h1>
+
+                <div style="margin-bottom: 20px;">
+                    <span style="font-size: 2em; font-weight: bold; color: #333;">@Model.Price.ToString("N0") <small style="font-size: 0.5em;">ر.س</small></span>
+                    @if (Model.OldPrice.HasValue && Model.OldPrice > Model.Price)
+                    {
+                        <div style="color: #999; text-decoration: line-through; display: inline-block; margin-right: 10px;">@Model.OldPrice.Value.ToString("N0") ر.س</div>
+                    }
+                    <div style="color: #28a745; font-size: 0.9em; margin-top: 5px;"><i class="fas fa-check-circle"></i> السعر شامل ضريبة القيمة المضافة</div>
+                </div>
+
+                <div style="background: #f1f8ff; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #d0e3ff;">
+                    <h5 style="margin-top: 0; color: #004085;">مميزات المنتج:</h5>
+                    <p style="white-space: pre-line; color: #333; margin-bottom: 0;">@Model.Description</p>
+                    @if (!string.IsNullOrEmpty(Model.SizeOrCapacity))
+                    {
+                        <div style="margin-top: 10px; font-weight: bold;">
+                            الحجم / السعة: <span style="color: #004085;">@Model.SizeOrCapacity</span>
+                        </div>
+                    }
+                </div>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="@waLink" target="_blank" class="btn primary-btn large-btn" style="flex: 2; background-color: #25d366; border-color: #25d366; text-align: center;">
+                        <i class="fab fa-whatsapp" style="font-size: 1.2em; vertical-align: middle;"></i> اطلبه الآن عبر واتساب
+                    </a>
+                    <a href="tel:+966510891747" class="btn secondary-btn large-btn" style="flex: 1; text-align: center;">
+                        <i class="fas fa-phone-alt"></i> اتصل
+                    </a>
+                </div>
+
+                <div style="margin-top: 30px; font-size: 0.9em; color: #666;">
+                    <p><i class="fas fa-truck"></i> توصيل وتركيب متاح للمناطق المغطاة.</p>
+                    <p><i class="fas fa-shield-alt"></i> ضمان الوكيل الرسمي.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (relatedProducts != null && relatedProducts.Any())
+    {
+        <div style="margin-top: 60px;">
+            <h3 style="margin-bottom: 30px; border-right: 4px solid var(--secondary-color); padding-right: 15px;">منتجات قد تعجبك</h3>
+            <div class="all-products-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+                @foreach (var prod in relatedProducts)
+                {
+                    <div class="product-card" style="background: white; border-radius: 10px; padding: 15px; border: 1px solid #eee; text-align: center;">
+                        <a href="@Url.Action("Details", "Store", new { id = prod.Id })" style="text-decoration: none; color: inherit;">
+                            <img src="~/images/products/@(string.IsNullOrEmpty(prod.ImageUrl) ? "default.png" : prod.ImageUrl)" style="height: 120px; object-fit: contain; margin-bottom: 10px;">
+                            <h4 style="font-size: 1em; margin: 5px 0; height: 40px; overflow: hidden;">@prod.Name</h4>
+                            <div style="font-weight: bold; color: var(--primary-color);">@prod.Price.ToString("N0") ر.س</div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

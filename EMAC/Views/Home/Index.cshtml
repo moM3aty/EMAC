@@ -2,7 +2,6 @@
     ViewData["Title"] = "الرئيسية";
 }
 
-<!-- (HERO Section) -->
 <section id="hero" class="page-section">
     <div class="container">
         <h1>الريادة في حلول التكييف والتبريد المتكاملة</h1>
@@ -14,7 +13,6 @@
     </div>
 </section>
 
-<!-- (About Section) -->
 <section id="about" class="page-section light-bg">
     <div class="container">
         <h2 class="animate-on-scroll">من نحن؟ | خبرتنا منذ 2017</h2>
@@ -49,13 +47,11 @@
                     <li><i class="fas fa-arrow-alt-circle-left"></i> توصيل العلامة التجارية.</li>
                 </ul>
             </div>
-            <!-- تم إضافة الصورة هنا -->
             <img src="~/images/hero_bg.png" alt="مؤسسة الإخلاص الحديثة" class="about-image animate-on-scroll">
         </div>
     </div>
 </section>
 
-<!-- (Features Section) -->
 <section id="features" class="page-section">
     <div class="container">
         <h2 class="animate-on-scroll">لماذا تختار مؤسسة الإخلاص الحديثة؟</h2>
@@ -84,7 +80,6 @@
     </div>
 </section>
 
-<!-- (Services Preview Section) -->
 <section id="services" class="page-section light-bg">
     <div class="container">
         <h2 class="animate-on-scroll">خدماتنا المتخصصة ومشاريع التركيب</h2>
@@ -114,7 +109,6 @@
     </div>
 </section>
 
-<!-- (Store Preview Section) -->
 <section id="store" class="page-section">
     <div class="container">
         <h2 class="animate-on-scroll">أجهزة المعرض (المنتجات)</h2>
@@ -135,7 +129,6 @@
     </div>
 </section>
 
-<!-- (Coverage Section) -->
 <section id="coverage" class="page-section light-bg">
     <div class="container">
         <h2 class="animate-on-scroll">نطاق خدماتنا</h2>
@@ -162,7 +155,6 @@
     </div>
 </section>
 
-<!-- (Automation / App Promo Section) -->
 <section id="app-promo" class="page-section blue-bg">
     <div class="container text-center">
         <h2 style="color: white;" class="animate-on-scroll">استخدم تطبيق EMAC لسهولة الحجز والتتبع</h2>
@@ -171,10 +163,10 @@
         </p>
 
         <div class="app-download-links animate-on-scroll" style="display: flex; justify-content: center; gap: 20px;">
-            <a href="#" target="_blank" class="btn primary-btn large-btn">
+            <a onclick ="installPWA()" target="_blank" class="btn primary-btn large-btn">
                 <i class="fab fa-google-play"></i> تنزيل تطبيق العميل
             </a>
-            <a href="#" target="_blank" class="btn secondary-btn large-btn" style="background-color: #555555; border-color: #555555;">
+                <a onclick="installPWA()" target="_blank" class="btn secondary-btn large-btn" style="background-color: #555555; border-color: #555555;">
                 <i class="fab fa-apple"></i> تنزيل من App Store
             </a>
         </div>
@@ -185,14 +177,12 @@
     </div>
 </section>
 
-<!-- (Contact Us Section) -->
 <section id="contact" class="page-section">
     <div class="container">
         <h2 class="animate-on-scroll">تواصل معنا</h2>
         <p class="section-description animate-on-scroll">نحن جاهزون لخدمتك في الأحساء والمنطقة الشرقية. (المقر الأساسي: الأحساء)</p>
 
         <div class="contact-grid">
-            <!-- نموذج الاتصال -->
             <div class="contact-form animate-on-scroll">
                 <h3>طلب خدمة صيانة/تركيب</h3>
 
@@ -233,7 +223,6 @@
                 </form>
             </div>
 
-            <!-- معلومات الاتصال -->
             <div class="contact-info animate-on-scroll">
                 <h3>معلومات الاتصال</h3>
                 <p><i class="fas fa-phone-alt"></i> الهاتف: <a href="tel:+966510891747">+966510891747</a></p>

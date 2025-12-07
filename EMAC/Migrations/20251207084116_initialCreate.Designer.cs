@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EMAC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251130122328_initialCreate2")]
-    partial class initialCreate2
+    [Migration("20251207084116_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,81 @@ namespace EMAC.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("EMAC.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ImageUrl = "ac_cat.png",
+                            Name = "مكيفات"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ImageUrl = "kitchen_cat.png",
+                            Name = "أجهزة مطبخ"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ImageUrl = "wash_cat.png",
+                            Name = "غسالات ومجففات"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "مكيفات سبليت",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "مكيفات شباك",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "مكيفات دولابي",
+                            ParentId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "ثلاجات",
+                            ParentId = 2
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "أفران",
+                            ParentId = 2
+                        });
+                });
 
             modelBuilder.Entity("EMAC.Models.ContactMessage", b =>
                 {
@@ -94,32 +169,6 @@ namespace EMAC.Migrations
                     b.HasIndex("WorkshopTicketId");
 
                     b.ToTable("InitialReports");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 11, 29, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4454),
-                            CustomerApproval = false,
-                            EstimatedCost = 850m,
-                            EstimatedTime = "3 أيام",
-                            FaultDescription = "تلف في الكومبريسور ونقص فريون",
-                            RequiredSpareParts = "كومبريسور جديد، غاز فريون",
-                            TechnicianNotes = "يحتاج تنظيف شامل للوحدة الداخلية",
-                            WorkshopTicketId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2025, 11, 26, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4460),
-                            CustomerApproval = true,
-                            EstimatedCost = 350m,
-                            EstimatedTime = "يوم واحد",
-                            FaultDescription = "عطل في الثرموستات",
-                            RequiredSpareParts = "ثرموستات أصلي",
-                            TechnicianNotes = "تم الاختبار بنجاح",
-                            WorkshopTicketId = 2
-                        });
                 });
 
             modelBuilder.Entity("EMAC.Models.Invoice", b =>
@@ -160,19 +209,99 @@ namespace EMAC.Migrations
                     b.HasIndex("WorkshopTicketId");
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("EMAC.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("OldPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("SizeOrCapacity")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            IsPaid = true,
-                            IssuedAt = new DateTime(2025, 11, 27, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4494),
-                            LaborCost = 150m,
-                            PaymentMethod = "CreditCard",
-                            SparePartsCost = 200m,
-                            TaxAmount = 52.5m,
-                            TotalAmount = 402.5m,
-                            WorkshopTicketId = 2
+                            Brand = "Gree",
+                            CategoryId = 4,
+                            CreatedAt = new DateTime(2025, 12, 7, 10, 41, 14, 61, DateTimeKind.Local).AddTicks(9167),
+                            Description = "مكيف عالي الكفاءة، توزيع هواء رباعي، موفر للطاقة.",
+                            ImageUrl = "gree_split.png",
+                            IsFeatured = true,
+                            Name = "مكيف جري سبليت 18000 وحدة - بارد",
+                            OldPrice = 2450m,
+                            Price = 2100m,
+                            SizeOrCapacity = "18000 BTU"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Brand = "LG",
+                            CategoryId = 5,
+                            CreatedAt = new DateTime(2025, 12, 7, 10, 41, 14, 61, DateTimeKind.Local).AddTicks(9222),
+                            Description = "كمبروسر قوي، تبريد سريع، ضمان 7 سنوات.",
+                            ImageUrl = "lg_window.png",
+                            IsFeatured = false,
+                            Name = "مكيف إل جي شباك 24000 وحدة",
+                            OldPrice = 2000m,
+                            Price = 1850m,
+                            SizeOrCapacity = "24000 BTU"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Brand = "Royal",
+                            CategoryId = 8,
+                            CreatedAt = new DateTime(2025, 12, 7, 10, 41, 14, 61, DateTimeKind.Local).AddTicks(9226),
+                            Description = "12 برنامج للطهي، وعاء غير لاصق، مؤقت ذكي.",
+                            ImageUrl = "royal_pot.png",
+                            IsFeatured = true,
+                            Name = "حلة ضغط كهربائية رويال 10 لتر",
+                            OldPrice = 299m,
+                            Price = 229m,
+                            SizeOrCapacity = "10 Liter"
                         });
                 });
 
@@ -318,60 +447,18 @@ namespace EMAC.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("TechnicianId")
+                        .HasColumnType("int");
+
                     b.Property<string>("TimeSlot")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ServiceRequests");
+                    b.HasIndex("TechnicianId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AppointmentDate = new DateTime(2025, 11, 28, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4360),
-                            CreatedAt = new DateTime(2025, 11, 28, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4365),
-                            CustomerName = "عبدالله محمد",
-                            DeviceCode = "DEV-AC-101",
-                            Location = "hassa",
-                            PhoneNumber = "0501234567",
-                            ProblemDescription = "المكيف لا يبرد ويصدر صوت عالي",
-                            RequestNumber = "REQ-20251120-1001",
-                            ServiceType = "ac_maint",
-                            Status = "InWorkshop",
-                            TimeSlot = "09:00 ص"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AppointmentDate = new DateTime(2025, 11, 29, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4370),
-                            CreatedAt = new DateTime(2025, 11, 29, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4373),
-                            CustomerName = "شركة النقل السريع",
-                            DeviceCode = "DEV-CA-205",
-                            Location = "dammam",
-                            PhoneNumber = "0559876543",
-                            ProblemDescription = "صيانة دورية لأسطول الشاحنات المبردة",
-                            RequestNumber = "REQ-20251121-2005",
-                            ServiceType = "car_ac",
-                            Status = "Confirmed",
-                            TimeSlot = "02:00 م"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AppointmentDate = new DateTime(2025, 11, 25, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4377),
-                            CreatedAt = new DateTime(2025, 11, 25, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4379),
-                            CustomerName = "سارة أحمد",
-                            DeviceCode = "DEV-FR-304",
-                            Location = "riyadh",
-                            PhoneNumber = "0561112233",
-                            ProblemDescription = "الثلاجة لا تعمل نهائياً",
-                            RequestNumber = "REQ-20251115-3040",
-                            ServiceType = "fridge_repair",
-                            Status = "Closed",
-                            TimeSlot = "10:00 ص"
-                        });
+                    b.ToTable("ServiceRequests");
                 });
 
             modelBuilder.Entity("EMAC.Models.Technician", b =>
@@ -488,32 +575,15 @@ namespace EMAC.Migrations
                     b.HasIndex("ServiceRequestId");
 
                     b.ToTable("WorkshopTickets");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Accessories = "ريموت كنترول",
-                            DeviceCode = "WS-1122-5544",
-                            DeviceModel = "مكيف سبليت جنرال 24 وحدة",
-                            PhysicalCondition = "خدوش بسيطة في الغطاء الخارجي",
-                            ReceivedAt = new DateTime(2025, 11, 28, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4418),
-                            SerialNumber = "SN-99887766",
-                            ServiceRequestId = 1,
-                            Status = "Inspected"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Accessories = "بدون",
-                            DeviceCode = "WS-1115-3322",
-                            DeviceModel = "ثلاجة سامسونج 20 قدم",
-                            PhysicalCondition = "سليمة",
-                            ReceivedAt = new DateTime(2025, 11, 25, 14, 23, 27, 94, DateTimeKind.Local).AddTicks(4423),
-                            SerialNumber = "SN-11223344",
-                            ServiceRequestId = 3,
-                            Status = "Closed"
-                        });
+            modelBuilder.Entity("EMAC.Models.Category", b =>
+                {
+                    b.HasOne("EMAC.Models.Category", "ParentCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("EMAC.Models.InitialReport", b =>
@@ -538,6 +608,26 @@ namespace EMAC.Migrations
                     b.Navigation("WorkshopTicket");
                 });
 
+            modelBuilder.Entity("EMAC.Models.Product", b =>
+                {
+                    b.HasOne("EMAC.Models.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("EMAC.Models.ServiceRequest", b =>
+                {
+                    b.HasOne("EMAC.Models.Technician", "AssignedTechnician")
+                        .WithMany()
+                        .HasForeignKey("TechnicianId");
+
+                    b.Navigation("AssignedTechnician");
+                });
+
             modelBuilder.Entity("EMAC.Models.WorkshopTicket", b =>
                 {
                     b.HasOne("EMAC.Models.ServiceRequest", "ServiceRequest")
@@ -545,6 +635,13 @@ namespace EMAC.Migrations
                         .HasForeignKey("ServiceRequestId");
 
                     b.Navigation("ServiceRequest");
+                });
+
+            modelBuilder.Entity("EMAC.Models.Category", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("SubCategories");
                 });
 #pragma warning restore 612, 618
         }

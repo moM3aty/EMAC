@@ -1,4 +1,25 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log("App is installable");
+});
+
+
+async function installPWA() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        deferredPrompt = null;
+    } else {
+
+        alert("لتثبيت التطبيق:\n1. اضغط على أيقونة المشاركة (Share) في المتصفح.\n2. اختر 'إضافة إلى الشاشة الرئيسية' (Add to Home Screen).");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger-menu');
     const navWrapper = document.querySelector('.main-nav-wrapper');
     const navLinks = document.querySelectorAll('.main-nav-wrapper nav ul li a');

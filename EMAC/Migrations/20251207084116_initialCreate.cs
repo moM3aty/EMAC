@@ -14,6 +14,26 @@ namespace EMAC.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ParentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Categories",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ContactMessages",
                 columns: table => new
                 {
@@ -46,29 +66,6 @@ namespace EMAC.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServiceRequests",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ServiceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TimeSlot = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProblemDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RequestNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    DeviceCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServiceRequests", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Technicians",
                 columns: table => new
                 {
@@ -83,6 +80,63 @@ namespace EMAC.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Technicians", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OldPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Brand = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SizeOrCapacity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsFeatured = table.Column<bool>(type: "bit", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Products_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServiceRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TimeSlot = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProblemDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RequestNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    DeviceCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TechnicianId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServiceRequests_Technicians_TechnicianId",
+                        column: x => x.TechnicianId,
+                        principalTable: "Technicians",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -163,6 +217,16 @@ namespace EMAC.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "ImageUrl", "Name", "ParentId" },
+                values: new object[,]
+                {
+                    { 1, "ac_cat.png", "مكيفات", null },
+                    { 2, "kitchen_cat.png", "أجهزة مطبخ", null },
+                    { 3, "wash_cat.png", "غسالات ومجففات", null }
+                });
+
+            migrationBuilder.InsertData(
                 table: "ServiceCategories",
                 columns: new[] { "Id", "ArabicName", "Code", "Description", "IsActive" },
                 values: new object[,]
@@ -178,16 +242,6 @@ namespace EMAC.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "ServiceRequests",
-                columns: new[] { "Id", "AppointmentDate", "CreatedAt", "CustomerName", "DeviceCode", "Location", "PhoneNumber", "ProblemDescription", "RequestNumber", "ServiceType", "Status", "TimeSlot" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2025, 11, 28, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5203), new DateTime(2025, 11, 28, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5209), "عبدالله محمد", "DEV-AC-101", "hassa", "0501234567", "المكيف لا يبرد ويصدر صوت عالي", "REQ-20251120-1001", "ac_maint", "InWorkshop", "09:00 ص" },
-                    { 2, new DateTime(2025, 11, 29, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5215), new DateTime(2025, 11, 29, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5218), "شركة النقل السريع", "DEV-CA-205", "dammam", "0559876543", "صيانة دورية لأسطول الشاحنات المبردة", "REQ-20251121-2005", "car_ac", "Confirmed", "02:00 م" },
-                    { 3, new DateTime(2025, 11, 25, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5222), new DateTime(2025, 11, 25, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5224), "سارة أحمد", "DEV-FR-304", "riyadh", "0561112233", "الثلاجة لا تعمل نهائياً", "REQ-20251115-3040", "fridge_repair", "Closed", "10:00 ص" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Technicians",
                 columns: new[] { "Id", "CoveredRegions", "FullName", "Specialty", "WorkingHoursEnd", "WorkingHoursStart" },
                 values: new object[,]
@@ -199,27 +253,31 @@ namespace EMAC.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "WorkshopTickets",
-                columns: new[] { "Id", "Accessories", "DeviceCode", "DeviceModel", "PhysicalCondition", "ReceivedAt", "SerialNumber", "ServiceRequestId", "Status" },
+                table: "Categories",
+                columns: new[] { "Id", "ImageUrl", "Name", "ParentId" },
                 values: new object[,]
                 {
-                    { 1, "ريموت كنترول", "WS-1122-5544", "مكيف سبليت جنرال 24 وحدة", "خدوش بسيطة في الغطاء الخارجي", new DateTime(2025, 11, 28, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5258), "SN-99887766", 1, "Inspected" },
-                    { 2, "بدون", "WS-1115-3322", "ثلاجة سامسونج 20 قدم", "سليمة", new DateTime(2025, 11, 25, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5264), "SN-11223344", 3, "Closed" }
+                    { 4, null, "مكيفات سبليت", 1 },
+                    { 5, null, "مكيفات شباك", 1 },
+                    { 6, null, "مكيفات دولابي", 1 },
+                    { 7, null, "ثلاجات", 2 },
+                    { 8, null, "أفران", 2 }
                 });
 
             migrationBuilder.InsertData(
-                table: "InitialReports",
-                columns: new[] { "Id", "CreatedAt", "CustomerApproval", "EstimatedCost", "EstimatedTime", "FaultDescription", "RequiredSpareParts", "TechnicianNotes", "WorkshopTicketId" },
+                table: "Products",
+                columns: new[] { "Id", "Brand", "CategoryId", "CreatedAt", "Description", "ImageUrl", "IsFeatured", "Name", "OldPrice", "Price", "SizeOrCapacity" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 11, 29, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5294), false, 850m, "3 أيام", "تلف في الكومبريسور ونقص فريون", "كومبريسور جديد، غاز فريون", "يحتاج تنظيف شامل للوحدة الداخلية", 1 },
-                    { 2, new DateTime(2025, 11, 26, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5299), true, 350m, "يوم واحد", "عطل في الثرموستات", "ثرموستات أصلي", "تم الاختبار بنجاح", 2 }
+                    { 1, "Gree", 4, new DateTime(2025, 12, 7, 10, 41, 14, 61, DateTimeKind.Local).AddTicks(9167), "مكيف عالي الكفاءة، توزيع هواء رباعي، موفر للطاقة.", "gree_split.png", true, "مكيف جري سبليت 18000 وحدة - بارد", 2450m, 2100m, "18000 BTU" },
+                    { 2, "LG", 5, new DateTime(2025, 12, 7, 10, 41, 14, 61, DateTimeKind.Local).AddTicks(9222), "كمبروسر قوي، تبريد سريع، ضمان 7 سنوات.", "lg_window.png", false, "مكيف إل جي شباك 24000 وحدة", 2000m, 1850m, "24000 BTU" },
+                    { 3, "Royal", 8, new DateTime(2025, 12, 7, 10, 41, 14, 61, DateTimeKind.Local).AddTicks(9226), "12 برنامج للطهي، وعاء غير لاصق، مؤقت ذكي.", "royal_pot.png", true, "حلة ضغط كهربائية رويال 10 لتر", 299m, 229m, "10 Liter" }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Invoices",
-                columns: new[] { "Id", "IsPaid", "IssuedAt", "LaborCost", "PaymentMethod", "SparePartsCost", "TaxAmount", "TotalAmount", "WorkshopTicketId" },
-                values: new object[] { 1, true, new DateTime(2025, 11, 27, 14, 19, 51, 577, DateTimeKind.Local).AddTicks(5336), 150m, "CreditCard", 200m, 52.5m, 402.5m, 2 });
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_ParentId",
+                table: "Categories",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InitialReports_WorkshopTicketId",
@@ -230,6 +288,16 @@ namespace EMAC.Migrations
                 name: "IX_Invoices_WorkshopTicketId",
                 table: "Invoices",
                 column: "WorkshopTicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CategoryId",
+                table: "Products",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServiceRequests_TechnicianId",
+                table: "ServiceRequests",
+                column: "TechnicianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkshopTickets_ServiceRequestId",
@@ -250,16 +318,22 @@ namespace EMAC.Migrations
                 name: "Invoices");
 
             migrationBuilder.DropTable(
-                name: "ServiceCategories");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Technicians");
+                name: "ServiceCategories");
 
             migrationBuilder.DropTable(
                 name: "WorkshopTickets");
 
             migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
                 name: "ServiceRequests");
+
+            migrationBuilder.DropTable(
+                name: "Technicians");
         }
     }
 }

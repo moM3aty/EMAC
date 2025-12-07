@@ -14,16 +14,13 @@
     const dateInput = document.getElementById('appointment-date');
     const slotsContainer = document.getElementById('slots-container');
 
-    // التنقل بين الخطوات
     nextButtons.forEach(btn => {
         btn.addEventListener('click', async (e) => {
-            // إذا كان الزر هو زر إرسال النموذج (الخطوة الأخيرة)، نترك التعامل لحدث submit
             if (btn.getAttribute('type') === 'submit') return;
 
             const nextStep = parseInt(btn.dataset.nextStep);
             const currentStepBlock = btn.closest('.booking-step');
 
-            // التحقق من صحة البيانات قبل الانتقال
             if (currentStepBlock.id === 'step-1') {
                 const serviceSelect = document.getElementById('b-service');
                 const locationSelect = document.getElementById('b-location');
@@ -58,7 +55,6 @@
         const nextStepEl = document.getElementById(`step-${stepNum}`);
         if (nextStepEl) {
             nextStepEl.style.display = 'block';
-            // تحديث شريط التقدم
             document.querySelectorAll('.booking-progress-bar .step').forEach(s => s.classList.remove('active'));
             for (let i = 1; i <= stepNum; i++) {
                 const stepIndicator = document.querySelector(`.booking-progress-bar .step[data-step="${i}"]`);
@@ -67,7 +63,6 @@
         }
     }
 
-    // منطق اختيار التاريخ وجلب المواعيد
     if (dateInput) {
         dateInput.min = new Date().toISOString().split("T")[0];
 
@@ -75,10 +70,7 @@
             bookingData.date = this.value;
             slotsContainer.innerHTML = '<p class="loading-text"><i class="fas fa-spinner fa-spin"></i> جاري البحث عن المواعيد...</p>';
 
-            console.log("جاري جلب المواعيد لـ:", bookingData); // Debugging
-
             try {
-                // التأكد من المسار الصحيح (قد يحتاج لتعديل إذا كان التطبيق مرفوعاً على Subfolder)
                 const url = `/Booking/GetAvailableSlots?serviceType=${encodeURIComponent(bookingData.service)}&location=${encodeURIComponent(bookingData.location)}&date=${encodeURIComponent(bookingData.date)}`;
 
                 const response = await fetch(url);
@@ -88,6 +80,7 @@
 
                 if (data.success) {
                     slotsContainer.innerHTML = '';
+
                     if (data.slots && data.slots.length > 0) {
                         data.slots.forEach(slot => {
                             const btn = document.createElement('button');
@@ -98,14 +91,15 @@
                             slotsContainer.appendChild(btn);
                         });
                     } else {
-                        slotsContainer.innerHTML = '<p class="text-warning">عذراً، جميع المواعيد محجوزة في هذا اليوم.</p>';
+                        const msg = data.message || 'عذراً، جميع المواعيد محجوزة في هذا اليوم.';
+                        slotsContainer.innerHTML = `<p class="text-warning" style="color:#d9534f; font-weight:bold;">${msg}</p>`;
                     }
                 } else {
                     slotsContainer.innerHTML = `<p style="color:red">خطأ: ${data.message}</p>`;
                 }
             } catch (error) {
                 console.error("Error fetching slots:", error);
-                slotsContainer.innerHTML = '<p style="color:red">حدث خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.</p>';
+                slotsContainer.innerHTML = '<p style="color:red">حدث خطأ في الاتصال بالخادم.</p>';
             }
         });
     }
@@ -114,20 +108,14 @@
         document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('active-slot'));
         btn.classList.add('active-slot');
         bookingData.timeSlot = slot;
-
-        // تفعيل زر التالي في الخطوة 2
         const nextBtnStep2 = document.querySelector('#step-2 .next-step-btn');
         if (nextBtnStep2) nextBtnStep2.disabled = false;
     }
 
-    // إرسال الحجز النهائي
     const finalForm = document.getElementById('final-booking-form');
     if (finalForm) {
         finalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            console.log("جاري إرسال الطلب..."); // Debugging
-
             bookingData.name = document.getElementById('b-name').value;
             bookingData.phone = document.getElementById('b-phone').value;
             bookingData.details = document.getElementById('b-details').value;
@@ -158,18 +146,23 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    console.log("تم الحجز بنجاح:", result);
                     document.getElementById('success-req-num').textContent = result.requestNumber;
                     document.getElementById('success-dev-code').textContent = result.deviceCode;
                     goToStep(4);
+
+                    if (result.whatsappUrl) {
+                        setTimeout(() => {
+                            window.open(result.whatsappUrl, '_blank');
+                        }, 1500); 
+                    }
+
                 } else {
                     alert('عذراً: ' + result.message);
                     submitBtn.textContent = originalBtnText;
                     submitBtn.disabled = false;
                 }
             } catch (error) {
-                console.error("Booking Error:", error);
-                alert('حدث خطأ غير متوقع أثناء الحجز. يرجى التحقق من اتصال الإنترنت والماولة مرة أخرى.');
+                alert('حدث خطأ غير متوقع أثناء الحجز.');
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
             }

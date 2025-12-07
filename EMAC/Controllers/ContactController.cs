@@ -19,11 +19,7 @@ namespace EMAC.Controllers
         {
             if (ModelState.IsValid)
             {
-                // يمكن هنا إضافة كود لحفظ الرسالة في قاعدة البيانات
-                // _context.ContactMessages.Add(model);
-                // await _context.SaveChangesAsync();
-
-                // للتجربة سنقوم بإرجاع رسالة نجاح
+               
                 TempData["SuccessMessage"] = "تم استلام طلبك بنجاح، سنتواصل معك قريباً.";
                 return RedirectToAction("Index", "Home");
             }
