@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EMAC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c10f71e4568cbfc8dfa7dae98e7d053d4a1f8c31")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19a41c9964ae4ddbc8d3c56f448f415c58da4c4e")]
 [assembly: System.Reflection.AssemblyProductAttribute("EMAC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EMAC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -108,9 +108,9 @@
             @foreach (var category in Model)
             {
                 <a href="@Url.Action("Products", "Store", new { categoryId = category.Id })" class="category-card-link" style="text-decoration:none;">
-                    <div class="category-card animate-on-scroll" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: 0.3s;">
-                        <div style="height: 150px; background: #eee; display: flex; align-items: center; justify-content: center; color: #aaa;">
-                            <i class="fas fa-cubes fa-3x"></i>
+                    <div class="category-card animate-on-scroll" style="height:400px;align-items:center; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: 0.3s;">
+                        <div >
+                            <img src="images/categories/@category.ImageUrl"  height="200px"/>
                         </div>
                         <div style="padding: 20px; text-align: center;">
                             <h3 style="margin: 0; color: var(--primary-color); font-size: 1.4em;">@category.Name</h3>
